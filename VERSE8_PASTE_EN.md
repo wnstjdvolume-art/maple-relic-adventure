@@ -67,6 +67,11 @@ UI / FLOW
 - Start screen -> class select screen -> game. End screen for win/lose with a Retry button.
 - Use MapleStory official assets for characters, monsters, backgrounds, BGM, and SFX
   (attack / skill / pickup / level-up / boss appearance). Keep the bright, cute MapleStory tone.
+
+LANGUAGE (important for this global game jam)
+- Default language is ENGLISH. Provide Korean as an optional language with a toggle button
+  (top-right). All UI text and battle messages must switch between English and Korean.
+  Persist the choice. (This game is judged in a global jam, so English-first is required.)
 ```
 
 ---
@@ -85,6 +90,11 @@ UI / FLOW
 8. B1 boss Mushmom (3-turn pattern), portal opens on defeat.
 9. Floor B2 + 4 stronger monsters + final boss Zakum (4-turn pattern) -> victory.
 10. HUD, start/class/end screens, MapleStory SFX & BGM.
+11. Language: English by default + a Korean toggle (top-right). Translate all UI & battle text.
+```
+Add a language toggle button at the top-right. Default language is English; allow switching to
+Korean. Translate all UI labels and battle messages for both. Remember the choice.
+```
 
 ---
 

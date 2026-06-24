@@ -96,6 +96,13 @@ Battle: Up/Down to select, Enter/Space to confirm, Esc to go back (1–4 number 
 Commands: Attack / Skill (submenu) / Potion / Run
 ```
 
+### 언어 (Languages)
+```
+English (default) + Korean (toggle button, top-right). All UI & battle text localized.
+```
+> 📌 재심사 메모: 리뷰어 피드백(글로벌 잼 → 영어 기본 + 한국어 옵션)을 반영함.
+> 빌드 릴리스 노트에 "Added English as default language with Korean toggle" 한 줄 넣으면 좋음.
+
 ---
 
 ## 2. 심사 어필 포인트 (제출 폼 "특징/차별점"란)

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +10,10 @@
   html, body { margin:0; height:100%; background:radial-gradient(circle at 50% 30%, #3a2f47, #1a1422);
     font-family:"Segoe UI","Malgun Gothic",sans-serif; color:#fff; overflow:hidden; user-select:none; }
   #wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
+  #topbar { width:800px; max-width:96vw; display:flex; align-items:center; justify-content:space-between; }
+  #title { font-size:22px; font-weight:800; } #title span { color:var(--maple-orange); }
+  #langBtn { background:rgba(0,0,0,.35); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:8px; padding:5px 12px; font-size:13px; cursor:pointer; }
+  #langBtn:hover { border-color:var(--maple-orange); }
   #hud { width:800px; max-width:96vw; display:flex; align-items:center; gap:12px; font-size:14px; flex-wrap:wrap; }
   #hud .box { background:rgba(0,0,0,.35); padding:6px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.1); }
   #hpbar,#mpbar { width:120px; height:13px; background:#3a2020; border-radius:7px; overflow:hidden; border:1px solid rgba(255,255,255,.2); display:inline-block; vertical-align:middle; }
@@ -18,11 +22,10 @@
   #mpfill { height:100%; background:linear-gradient(90deg,#4aa3ff,#9fd0ff); transition:width .2s; }
   #relics { color:var(--maple-orange); font-weight:700; }
   canvas { background:#15101d; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.5); border:2px solid rgba(255,154,60,.4); }
-  #title { font-size:22px; font-weight:800; } #title span { color:var(--maple-orange); }
   #hint { font-size:12px; opacity:.7; }
   .center-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(10,6,18,.88); text-align:center; gap:14px; padding:20px;}
   .center-overlay h1 { font-size:36px; margin:0; }
-  .center-overlay p { font-size:15px; opacity:.85; margin:0; max-width:540px; line-height:1.7; }
+  .center-overlay p { font-size:15px; opacity:.85; margin:0; max-width:560px; line-height:1.7; white-space:pre-line; }
   .btn { margin-top:8px; padding:12px 28px; font-size:16px; font-weight:700; cursor:pointer; background:var(--maple-orange); color:#2b2233; border:none; border-radius:10px; box-shadow:0 6px 0 #c76e1d; }
   .btn:active { transform:translateY(3px); box-shadow:0 3px 0 #c76e1d; }
   .hidden { display:none !important; }
@@ -37,53 +40,197 @@
 </head>
 <body>
 <div id="wrap">
-  <div id="title">🍁 Maple <span>Relic</span> Adventure</div>
+  <div id="topbar">
+    <div id="title">🍁 Maple <span>Relic</span> Adventure</div>
+    <button id="langBtn">한국어</button>
+  </div>
   <div id="hud">
-    <div class="box" id="classbox">직업 -</div>
+    <div class="box" id="classbox">-</div>
     <div class="box">Lv <span id="lvtxt">1</span></div>
     <div class="box">HP <div id="hpbar"><div id="hpfill"></div></div> <span id="hptxt"></span></div>
     <div class="box">MP <div id="mpbar"><div id="mpfill"></div></div></div>
-    <div class="box">물약 <span id="pottxt">3</span></div>
-    <div class="box">유물 <span id="relics">0 / 5</span></div>
+    <div class="box"><span id="lblPot">Potions</span> <span id="pottxt">4</span></div>
+    <div class="box"><span id="lblRelic">Relics</span> <span id="relics">0 / 5</span></div>
     <div class="box" id="msg"></div>
   </div>
   <canvas id="game" width="800" height="544"></canvas>
-  <div id="hint">필드: <kbd>WASD</kbd>/<kbd>화살표</kbd> 이동 · 배틀: <kbd>↑↓</kbd> 선택 <kbd>Enter</kbd> 확인 <kbd>Esc</kbd> 뒤로</div>
+  <div id="hint"></div>
 </div>
 
 <div id="startScreen" class="center-overlay">
   <h1>🍁 Maple Relic Adventure</h1>
-  <p>헤네시스 던전을 탐험하며 <b>고대 유물 5개</b>를 모으세요.<br/>
-     필드 몬스터와 <b>부딪히면 턴제 배틀</b>! 12종의 몬스터를 처치하고 레벨업하여,<br/>
-     마지막엔 던전의 수호자 <b>머쉬맘</b>을 쓰러뜨리고 탈출하세요.</p>
-  <button class="btn" id="startBtn">모험 시작</button>
+  <p id="startP1"></p>
+  <p id="startP2" style="font-size:13px;opacity:.7"></p>
+  <button class="btn" id="startBtn"></button>
 </div>
 
 <div id="classScreen" class="center-overlay hidden">
-  <h1>직업을 선택하세요</h1>
+  <h1 id="classTitle"></h1>
   <div id="classCards"></div>
 </div>
 
 <div id="floorScreen" class="center-overlay hidden">
   <h1 id="floorTitle"></h1>
   <p id="floorText"></p>
-  <button class="btn" id="floorBtn">내려가기</button>
+  <button class="btn" id="floorBtn"></button>
 </div>
 
 <div id="endScreen" class="center-overlay hidden">
   <h1 id="endTitle"></h1>
   <p id="endText"></p>
-  <button class="btn" id="retryBtn">다시 하기</button>
+  <button class="btn" id="retryBtn"></button>
 </div>
 
 <script>
-// =========== Maple Relic Adventure — 직업 3종 + 12몬스터 + 보스 + 턴제 배틀 ===========
+// ============ Maple Relic Adventure — i18n(EN default + KO option) ============
 const TILE = 32;
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const COLS = canvas.width/TILE, ROWS = canvas.height/TILE;
 const TOTAL_RELICS = 5;
 
+// ---------- 언어 ----------
+let LANG = "en";
+try { const s = localStorage.getItem("mra_lang"); if (s==="ko"||s==="en") LANG = s; } catch(e){}
+
+// 적 행동 라벨 (KO는 "의 ~!" 형태, EN은 동사구)
+const ACT = {
+  atk:    { ko:"의 공격!",        en:"attacks" },
+  heavy:  { ko:"의 묵직한 일격!",  en:"lands a heavy blow" },
+  pspore: { ko:"의 독 포자!",      en:"sprays poison spores" },
+  spore:  { ko:"의 포자 폭발!",    en:"unleashes a Spore Blast" },
+  smash:  { ko:"의 강타!",         en:"smashes down" },
+  earth:  { ko:"의 대지의 분노!",  en:"calls the Earth's Wrath" },
+  flame:  { ko:"의 흑염 브레스!",  en:"breathes Dark Flame" },
+  arm:    { ko:"의 팔 휘두르기!",  en:"swings its arm" },
+  fusion: { ko:"의 융합 폭발!!",   en:"erupts in a Fusion Blast" },
+};
+
+const L = {
+  en: {
+    hero:"Hero",
+    hint:"Field: WASD/Arrows to move · Battle: ↑↓ select, Enter confirm, Esc back",
+    lblPot:"Potions", lblRelic:"Relics",
+    startP1:"Explore the Henesys dungeon and gather 5 ancient relics.\nBump into a monster to start a turn-based battle! Defeat 12+ monster types and level up,\nthen take down the guardian Mushmom and the final boss Zakum to escape.",
+    startP2:"Field: WASD/Arrows · Battle: ↑↓ to select, Enter/Space to confirm, Esc to go back",
+    btnStart:"Start Adventure",
+    classTitle:"Choose your class",
+    btnRetry:"Play Again",
+    menuMain:["⚔ Attack","✦ Skill","🧪 Potion","🏃 Run"],
+    whatDo:"What will you do?",
+    skillPick:"Choose a skill (Esc: back)",
+    back:"← Back",
+    poisonTag:"☠ Poison",
+    atkBuff:(n)=>`ATK +${n}`,
+    potShort:"Potions",
+    relicGoal:"Collect 5 relics!",
+    relicGoalDeep:"Deeper still... collect 5 relics!",
+    relicGet:(n)=>`Relic obtained! (${n}/${TOTAL_RELICS})`,
+    bossAppear:(nm)=>`⚠ The dungeon guardian ${nm} has appeared!`,
+    beatBossFirst:(nm)=>`Defeat the guardian ${nm} first!`,
+    goPortal:"Head to the portal!",
+    beatBoss:(nm)=>`Defeat ${nm}!`,
+    wildAppear:(nm)=>`A wild ${nm} appeared!`,
+    bossBlock:(nm)=>`⚠ The dungeon guardian ${nm} blocks your path!`,
+    bossAura:"A powerful aura emanates...",
+    playerPoison:(d,t)=>`Hero takes ${d} poison damage! (${t} turns left)`,
+    enemyPoison:(nm,d,t)=>`${nm} takes ${d} poison damage! (${t} turns left)`,
+    enemyHit:(nm,dmg,act)=>`${nm} ${ACT[act].en}! Hero takes ${dmg} damage!`,
+    playerPoisoned:"Hero is poisoned!",
+    atkMsg:(nm,dmg,crit)=>`Hero attacks!${crit?" Critical hit!":""} ${nm} takes ${dmg} damage!`,
+    atkMiss:"Hero attacks! ...but missed!",
+    noMp:"Not enough MP!",
+    noPotion:"No potions left!",
+    potionMsg:(amt)=>`Used a potion! Restored ${amt} HP!`,
+    cantRunBoss:"You can't run from a boss!",
+    ranAway:"Got away safely!",
+    cantRun:"Couldn't escape!",
+    skillHeal:(sk,amt)=>`${sk}! Restored ${amt} HP!`,
+    skillBuff:(sk,amt,tot)=>`${sk}! ATK up by ${amt}! (now +${tot})`,
+    skillMulti:(sk,hits,tot,crit)=>`${sk}! ${hits} hits for ${tot} total damage!${crit?" Critical!":""}`,
+    skillSingle:(sk,nm,tot,crit)=>`${sk}!${crit?" Critical hit!":""} ${nm} takes ${tot} damage!`,
+    skillAllMiss:(sk)=>`${sk}! ...all missed!`,
+    enemyPoisoned:(nm)=>`${nm} is poisoned!`,
+    defeated:(nm)=>`Defeated ${nm}!`,
+    expGain:(n)=>`Gained ${n} EXP!`,
+    levelUp:(lv)=>`✨ Level up! Lv.${lv} (HP & ATK up, fully healed!)`,
+    portalDeeper:"🌀 A portal to the depths has opened!",
+    portalEscape:"🌀 The escape portal has opened! Flee the dungeon!",
+    loseLine1:"Hero has fallen...",
+    loseLine2:"...and lost consciousness in the dungeon.",
+    floorClearTitle:(s)=>`✨ ${s} Cleared!`,
+    floorClearText:(cur,nxt)=>`You conquered ${cur}! HP/MP fully restored and gained 2 potions.\nDeeper down, ${nxt} awaits...`,
+    floorBtn:(s)=>`Descend to ${s}`,
+    winTitle:"🎉 Escaped!",
+    loseTitle:"💀 Game Over",
+    winText:(nm,lv)=>`You defeated the final boss Zakum and conquered the dungeon's secrets! Final ${nm} Lv.${lv} 🏆`,
+    loseText:(s,c)=>`You gathered ${c}/${TOTAL_RELICS} relics in ${s}. Try again!`,
+    langBtn:"한국어",
+  },
+  ko: {
+    hero:"용사",
+    hint:"필드: WASD/화살표 이동 · 배틀: ↑↓ 선택, Enter 확인, Esc 뒤로",
+    lblPot:"물약", lblRelic:"유물",
+    startP1:"헤네시스 던전을 탐험하며 고대 유물 5개를 모으세요.\n몬스터와 부딪히면 턴제 배틀! 12종 이상의 몬스터를 처치하고 레벨업하여,\n수호자 머쉬맘과 최종 보스 자쿰을 쓰러뜨리고 탈출하세요.",
+    startP2:"필드: WASD/화살표 · 배틀: ↑↓ 선택, Enter/Space 확인, Esc 뒤로",
+    btnStart:"모험 시작",
+    classTitle:"직업을 선택하세요",
+    btnRetry:"다시 하기",
+    menuMain:["⚔ 공격","✦ 스킬","🧪 물약","🏃 도망"],
+    whatDo:"무엇을 할까?",
+    skillPick:"스킬 선택 (Esc: 뒤로)",
+    back:"← 뒤로",
+    poisonTag:"☠ 중독",
+    atkBuff:(n)=>`공격력 +${n}`,
+    potShort:"물약",
+    relicGoal:"유물 5개를 모으자!",
+    relicGoalDeep:"더 깊은 곳... 유물 5개를 모으자!",
+    relicGet:(n)=>`유물 획득! (${n}/${TOTAL_RELICS})`,
+    bossAppear:(nm)=>`⚠ 던전의 수호자 ${nm}이(가) 나타났다!`,
+    beatBossFirst:(nm)=>`수호자 ${nm}을(를) 먼저 처치하라!`,
+    goPortal:"포탈로 이동하라!",
+    beatBoss:(nm)=>`${nm}을(를) 처치하라!`,
+    wildAppear:(nm)=>`앗! 야생의 ${nm}이(가) 나타났다!`,
+    bossBlock:(nm)=>`⚠ 던전의 수호자 ${nm}이(가) 길을 막아섰다!`,
+    bossAura:"강력한 기운이 느껴진다...",
+    playerPoison:(d,t)=>`용사는 독으로 ${d}의 데미지를 받았다! (남은 ${t}턴)`,
+    enemyPoison:(nm,d,t)=>`${nm}은(는) 독으로 ${d}의 데미지! (남은 ${t}턴)`,
+    enemyHit:(nm,dmg,act)=>`${nm}${ACT[act].ko} 용사는 ${dmg}의 데미지!`,
+    playerPoisoned:"용사가 중독되었다!",
+    atkMsg:(nm,dmg,crit)=>`용사의 공격!${crit?" 회심의 일격!":""} ${nm}에게 ${dmg}의 데미지!`,
+    atkMiss:"용사의 공격! ...빗나갔다!",
+    noMp:"MP가 부족하다!",
+    noPotion:"물약이 없다!",
+    potionMsg:(amt)=>`물약을 사용했다! HP ${amt} 회복!`,
+    cantRunBoss:"보스에게서는 도망칠 수 없다!",
+    ranAway:"무사히 도망쳤다!",
+    cantRun:"도망칠 수 없었다!",
+    skillHeal:(sk,amt)=>`${sk}! HP ${amt} 회복!`,
+    skillBuff:(sk,amt,tot)=>`${sk}! 공격력이 ${amt} 상승했다! (현재 +${tot})`,
+    skillMulti:(sk,hits,tot,crit)=>`${sk}! ${hits}회 적중, 총 ${tot}의 데미지!${crit?" 회심!":""}`,
+    skillSingle:(sk,nm,tot,crit)=>`${sk}!${crit?" 회심의 일격!":""} ${nm}에게 ${tot}의 데미지!`,
+    skillAllMiss:(sk)=>`${sk}! ...모두 빗나갔다!`,
+    enemyPoisoned:(nm)=>`${nm}이(가) 중독되었다!`,
+    defeated:(nm)=>`${nm}을(를) 쓰러뜨렸다!`,
+    expGain:(n)=>`경험치 ${n} 획득!`,
+    levelUp:(lv)=>`✨ 레벨 업! Lv.${lv} (HP·공격력 상승, 완전 회복!)`,
+    portalDeeper:"🌀 더 깊은 곳으로 가는 포탈이 열렸다!",
+    portalEscape:"🌀 탈출 포탈이 열렸다! 던전을 탈출하라!",
+    loseLine1:"용사는 쓰러졌다...",
+    loseLine2:"던전에서 정신을 잃었다.",
+    floorClearTitle:(s)=>`✨ ${s} 클리어!`,
+    floorClearText:(cur,nxt)=>`${cur}을(를) 정복했다! HP·MP를 회복하고 물약 2개를 얻었다.\n더 깊은 곳, ${nxt}이(가) 당신을 기다린다...`,
+    floorBtn:(s)=>`${s}(으)로 내려가기`,
+    winTitle:"🎉 탈출 성공!",
+    loseTitle:"💀 게임 오버",
+    winText:(nm,lv)=>`최종 보스 자쿰을 물리치고 던전의 모든 비밀을 정복했다! 최종 ${nm} Lv.${lv} 🏆`,
+    loseText:(s,c)=>`${s}에서 유물 ${c}/${TOTAL_RELICS}개를 모았다. 다시 도전해보자!`,
+    langBtn:"English",
+  },
+};
+function t(k){ return L[LANG][k]; }
+
+// ---------- 맵 ----------
 const MAP_B1 = [
   "#########################",
   "#P..M.#......#..........#",
@@ -123,88 +270,90 @@ const MAP_B2 = [
   "#########################",
 ];
 
-// ---------- 직업 ----------
+// ---------- 직업 (다국어) ----------
 const CLASSES = {
-  warrior: { name:"전사", emoji:"⚔️", body:"#ffcf8b", hat:"#e8443a", weapon:"sword",
+  warrior: { nm:{en:"Warrior",ko:"전사"}, emoji:"⚔️", body:"#ffcf8b", hat:"#e8443a", weapon:"sword",
     maxHp:72, maxMp:14, atk:11, crit:0.10, potions:4,
-    desc:["높은 HP·공격력","근접 강타형","MP 적음"],
+    desc:{ en:["High HP & melee","Front-line bruiser","Low MP"], ko:["높은 HP·근접 강타","근접 강타형","MP 적음"] },
     skills:[
-      { name:"파워스트라이크", mp:4,  kind:"atk", mul:1.7, hits:1, acc:0.95, info:"강력한 일격" },
-      { name:"슬래시블래스트", mp:7,  kind:"atk", mul:1.2, hits:2, acc:0.90, info:"2회 베기" },
-      { name:"디바인스매시",   mp:10, kind:"atk", mul:2.5, hits:1, acc:0.80, info:"최강 일격(명중↓)" },
+      { nm:{en:"Power Strike",ko:"파워스트라이크"}, mp:4,  kind:"atk", mul:1.7, hits:1, acc:0.95, info:{en:"Heavy single hit",ko:"강력한 일격"} },
+      { nm:{en:"Slash Blast",ko:"슬래시블래스트"},  mp:7,  kind:"atk", mul:1.2, hits:2, acc:0.90, info:{en:"2-hit slash",ko:"2회 베기"} },
+      { nm:{en:"Divine Smash",ko:"디바인스매시"},   mp:10, kind:"atk", mul:2.5, hits:1, acc:0.80, info:{en:"Max hit (low acc)",ko:"최강 일격(명중↓)"} },
     ] },
-  mage: { name:"마법사", emoji:"🔮", body:"#ffcf8b", hat:"#6a5acd", weapon:"staff",
+  mage: { nm:{en:"Mage",ko:"마법사"}, emoji:"🔮", body:"#ffcf8b", hat:"#6a5acd", weapon:"staff",
     maxHp:52, maxMp:26, atk:10, crit:0.10, potions:4,
-    desc:["높은 MP·마법","자가 회복 가능","HP 낮음"],
+    desc:{ en:["High MP & magic","Can self-heal","Low HP"], ko:["높은 MP·마법","자가 회복 가능","HP 낮음"] },
     skills:[
-      { name:"파이어볼",   mp:4, kind:"atk",  mul:1.7, hits:1, acc:0.95, info:"화염 마법" },
-      { name:"포이즌미스트",mp:7, kind:"atk",  mul:1.0, hits:1, acc:0.95, poison:true, info:"독 부여" },
-      { name:"힐",         mp:6, kind:"heal", heal:42, info:"HP 회복" },
+      { nm:{en:"Fireball",ko:"파이어볼"},     mp:4, kind:"atk",  mul:1.7, hits:1, acc:0.95, info:{en:"Fire magic",ko:"화염 마법"} },
+      { nm:{en:"Poison Mist",ko:"포이즌미스트"},mp:7, kind:"atk",  mul:1.0, hits:1, acc:0.95, poison:true, info:{en:"Inflicts poison",ko:"독 부여"} },
+      { nm:{en:"Heal",ko:"힐"},               mp:6, kind:"heal", heal:42, info:{en:"Restore HP",ko:"HP 회복"} },
     ] },
-  archer: { name:"궁수", emoji:"🏹", body:"#ffcf8b", hat:"#2faf63", weapon:"bow",
+  archer: { nm:{en:"Archer",ko:"궁수"}, emoji:"🏹", body:"#ffcf8b", hat:"#2faf63", weapon:"bow",
     maxHp:60, maxMp:18, atk:10, crit:0.25, potions:4,
-    desc:["높은 치명타","다단히트","밸런스형"],
+    desc:{ en:["High crit","Multi-hit","Balanced"], ko:["높은 치명타","다단히트","밸런스형"] },
     skills:[
-      { name:"더블샷",   mp:4, kind:"atk",  mul:1.0, hits:2, acc:0.95, info:"2연사" },
-      { name:"트리플샷", mp:8, kind:"atk",  mul:0.85, hits:3, acc:0.90, info:"3연사" },
-      { name:"집중",     mp:4, kind:"buff", atk:5, info:"공격력 영구 상승" },
+      { nm:{en:"Double Shot",ko:"더블샷"},   mp:4, kind:"atk",  mul:1.0, hits:2, acc:0.95, info:{en:"2 arrows",ko:"2연사"} },
+      { nm:{en:"Triple Shot",ko:"트리플샷"}, mp:8, kind:"atk",  mul:0.85, hits:3, acc:0.90, info:{en:"3 arrows",ko:"3연사"} },
+      { nm:{en:"Focus",ko:"집중"},           mp:4, kind:"buff", atk:5, info:{en:"Permanent ATK up",ko:"공격력 영구 상승"} },
     ] },
+};
+function clsName(c){ return c.nm[LANG]; }
+function skName(s){ return s.nm[LANG]; }
+function skInfo(s){ return s.info[LANG]; }
+
+// ---------- 몬스터 (다국어 이름) ----------
+const MONSTER_TYPES = {
+  snailB:   { nm:{en:"Blue Snail",ko:"파란달팽이"},   color:"#6fa8ff", maxHp:14, atk:4,  exp:5,  r:10, tier:1 },
+  snail:    { nm:{en:"Snail",ko:"달팽이"},           color:"#8fd14f", maxHp:20, atk:5,  exp:7,  r:10, tier:1 },
+  snailR:   { nm:{en:"Red Snail",ko:"빨간달팽이"},    color:"#ff6b6b", maxHp:26, atk:7,  exp:10, r:10, tier:1 },
+  pig:      { nm:{en:"Ribbon Pig",ko:"리본돼지"},     color:"#ff9ec2", maxHp:34, atk:8,  exp:15, r:12, tier:2 },
+  mushG:    { nm:{en:"Green Mushroom",ko:"초록버섯"}, color:"#7bd86b", maxHp:30, atk:7,  exp:14, r:12, tier:2, kind:"poison" },
+  mushO:    { nm:{en:"Orange Mushroom",ko:"주황버섯"},color:"#ff8a3c", maxHp:36, atk:9,  exp:17, r:12, tier:2 },
+  bubbling: { nm:{en:"Bubbling",ko:"버블링"},         color:"#7fe3e0", maxHp:38, atk:9,  exp:18, r:12, tier:2 },
+  slime:    { nm:{en:"Slime",ko:"슬라임"},           color:"#6fb7ff", maxHp:42, atk:10, exp:22, r:13, tier:3 },
+  stump:    { nm:{en:"Stump",ko:"스텀프"},           color:"#b08055", maxHp:46, atk:10, exp:24, r:13, tier:3 },
+  zombie:   { nm:{en:"Zombie Mushroom",ko:"좀비버섯"},color:"#9a7fb0", maxHp:50, atk:11, exp:28, r:13, tier:3, kind:"poison" },
+  darkstump:{ nm:{en:"Dark Stump",ko:"다크스텀프"},   color:"#6b5a45", maxHp:56, atk:12, exp:34, r:14, tier:4, kind:"heavy" },
+  boar:     { nm:{en:"Wild Boar",ko:"와일드보어"},    color:"#c89b6a", maxHp:62, atk:14, exp:42, r:14, tier:4, kind:"heavy" },
+  curseeye: { nm:{en:"Curse Eye",ko:"커즈아이"},      color:"#d65a9a", maxHp:60, atk:14, exp:46, r:13, tier:5, kind:"poison" },
+  wildkargo:{ nm:{en:"Wild Kargo",ko:"와일드카고"},   color:"#d98a4a", maxHp:74, atk:16, exp:56, r:14, tier:5, kind:"heavy" },
+  darkyeti: { nm:{en:"Dark Yeti",ko:"다크예티"},      color:"#7a8fb0", maxHp:84, atk:18, exp:66, r:15, tier:6, kind:"heavy" },
+  jrbalrog: { nm:{en:"Jr. Balrog",ko:"주니어발록"},   color:"#8a4f7a", maxHp:96, atk:19, exp:82, r:15, tier:6, kind:"heavy" },
+  mushmom:  { nm:{en:"Mushmom",ko:"머쉬맘"},          color:"#b94fb0", maxHp:170,atk:15, exp:140,r:18, tier:9, kind:"boss" },
+  zakum:    { nm:{en:"Zakum",ko:"자쿰"},              color:"#d94f2f", maxHp:330,atk:21, exp:420,r:22, tier:9, kind:"boss" },
+};
+function monName(key){ return MONSTER_TYPES[key].nm[LANG]; }
+
+const BOSS_PATTERNS = {
+  mushmom: [ {act:"atk",mul:1.0}, {act:"spore",mul:1.6,poison:true}, {act:"smash",mul:1.3} ],
+  zakum:   [ {act:"earth",mul:1.4}, {act:"flame",mul:1.3,poison:true}, {act:"arm",mul:1.1}, {act:"fusion",mul:1.8} ],
 };
 
-// ---------- 몬스터 12종 + 보스 ----------
-const MONSTER_TYPES = {
-  snailB:   { name:"파란달팽이", color:"#6fa8ff", maxHp:14, atk:4,  exp:5,  r:10, tier:1 },
-  snail:    { name:"달팽이",     color:"#8fd14f", maxHp:20, atk:5,  exp:7,  r:10, tier:1 },
-  snailR:   { name:"빨간달팽이", color:"#ff6b6b", maxHp:26, atk:7,  exp:10, r:10, tier:1 },
-  pig:      { name:"리본돼지",   color:"#ff9ec2", maxHp:34, atk:8,  exp:15, r:12, tier:2 },
-  mushG:    { name:"초록버섯",   color:"#7bd86b", maxHp:30, atk:7,  exp:14, r:12, tier:2, kind:"poison" },
-  mushO:    { name:"주황버섯",   color:"#ff8a3c", maxHp:36, atk:9,  exp:17, r:12, tier:2 },
-  bubbling: { name:"버블링",     color:"#7fe3e0", maxHp:38, atk:9,  exp:18, r:12, tier:2 },
-  slime:    { name:"슬라임",     color:"#6fb7ff", maxHp:42, atk:10, exp:22, r:13, tier:3 },
-  stump:    { name:"스텀프",     color:"#b08055", maxHp:46, atk:10, exp:24, r:13, tier:3 },
-  zombie:   { name:"좀비버섯",   color:"#9a7fb0", maxHp:50, atk:11, exp:28, r:13, tier:3, kind:"poison" },
-  darkstump:{ name:"다크스텀프", color:"#6b5a45", maxHp:56, atk:12, exp:34, r:14, tier:4, kind:"heavy" },
-  boar:     { name:"와일드보어", color:"#c89b6a", maxHp:62, atk:14, exp:42, r:14, tier:4, kind:"heavy" },
-  // B2 (망각의 지하) 몬스터
-  curseeye: { name:"커즈아이",   color:"#d65a9a", maxHp:60, atk:14, exp:46, r:13, tier:5, kind:"poison" },
-  wildkargo:{ name:"와일드카고", color:"#d98a4a", maxHp:74, atk:16, exp:56, r:14, tier:5, kind:"heavy" },
-  darkyeti: { name:"다크예티",   color:"#7a8fb0", maxHp:84, atk:18, exp:66, r:15, tier:6, kind:"heavy" },
-  jrbalrog: { name:"주니어발록", color:"#8a4f7a", maxHp:96, atk:19, exp:82, r:15, tier:6, kind:"heavy" },
-  // 보스
-  mushmom:  { name:"머쉬맘",     color:"#b94fb0", maxHp:170,atk:15, exp:140,r:18, tier:9, kind:"boss" },
-  zakum:    { name:"자쿰",       color:"#d94f2f", maxHp:330,atk:21, exp:420,r:22, tier:9, kind:"boss" },
-};
-// 보스 행동 패턴 (turn % 길이)
-const BOSS_PATTERNS = {
-  mushmom: [ {mul:1.0,label:"의 공격!"}, {mul:1.6,label:"의 포자 폭발!",poison:true}, {mul:1.3,label:"의 강타!"} ],
-  zakum:   [ {mul:1.4,label:"의 대지의 분노!"}, {mul:1.3,label:"의 흑염 브레스!",poison:true}, {mul:1.1,label:"의 팔 휘두르기!"}, {mul:1.8,label:"의 융합 폭발!!"} ],
-};
-// 층(floor) 구성: 클리어 시 다음 층으로
 const FLOORS = [
-  { name:"B1 헤네시스 던전", short:"B1", map:MAP_B1, boss:"mushmom",
+  { nm:{en:"B1 Henesys Dungeon",ko:"B1 헤네시스 던전"}, short:"B1", map:MAP_B1, boss:"mushmom",
     pool:["snailB","snail","snail","snailR","pig","mushG","mushO","bubbling","slime","stump","zombie","darkstump","boar"] },
-  { name:"B2 망각의 지하",   short:"B2", map:MAP_B2, boss:"zakum",
+  { nm:{en:"B2 Forgotten Depths",ko:"B2 망각의 지하"}, short:"B2", map:MAP_B2, boss:"zakum",
     pool:["pig","mushO","slime","stump","zombie","darkstump","boar","curseeye","wildkargo","darkyeti","jrbalrog","boar","curseeye"] },
 ];
+function floorName(idx){ return FLOORS[idx].nm[LANG]; }
 
 let keys = {}, state = "title", game = null, player = null, battle = null, transition = null, particles = [];
 
 // ---------- 플레이어 ----------
 function newPlayer(classKey){
   const c = CLASSES[classKey];
-  return { cls:classKey, name:c.name, lv:1, exp:0, expNext:22,
+  return { cls:classKey, lv:1, exp:0, expNext:22,
     maxHp:c.maxHp, hp:c.maxHp, maxMp:c.maxMp, mp:c.maxMp, atk:c.atk, crit:c.crit,
     potions:c.potions, atkBuff:0, status:{poison:0} };
 }
 function pAtk(){ return player.atk + player.atkBuff; }
+function playerName(){ return clsName(CLASSES[player.cls]); }
 
 // ---------- 월드 ----------
 function makeWorld(floorIdx){
   const floor=FLOORS[floorIdx], map=floor.map;
   const walls=[], relics=[], monsters=[]; let portal=null, start=null;
-  // 풀을 인덱스 기반으로 섞어 매번 조금 다른 배치
-  const pool=floor.pool, off=Math.floor(Math.random()*pool.length);
-  let spawnIdx=0;
+  const pool=floor.pool, off=Math.floor(Math.random()*pool.length); let spawnIdx=0;
   for(let r=0;r<map.length;r++) for(let c=0;c<map[r].length;c++){
     const ch=map[r][c], x=c*TILE, y=r*TILE;
     if(ch==="#") walls.push({x,y});
@@ -213,12 +362,11 @@ function makeWorld(floorIdx){
     else if(ch==="M"){ const key=pool[(spawnIdx+off)%pool.length]; spawnIdx++; monsters.push(makeFieldMon(x+TILE/2,y+TILE/2,key)); }
     else if(ch==="X") portal={x:x+TILE/2,y:y+TILE/2,open:false,t:0};
   }
-  return { floorIdx, map, name:floor.name, short:floor.short, bossKey:floor.boss,
+  return { floorIdx, map, short:floor.short, bossKey:floor.boss,
     walls, relics, monsters, portal, px:start.x, py:start.y, pr:11, dir:{x:0,y:1},
     collected:0, encounterCd:0, bossSpawned:false, bossDefeated:false };
 }
-function makeFieldMon(x,y,key){ const t=MONSTER_TYPES[key];
-  return { key, x, y, r:t.r, wob:Math.random()*6.28, defeated:false, homeX:x, homeY:y }; }
+function makeFieldMon(x,y,key){ const t=MONSTER_TYPES[key]; return { key, x, y, r:t.r, wob:Math.random()*6.28, defeated:false, homeX:x, homeY:y }; }
 
 // ---------- 충돌 ----------
 function isWall(cx,cy,cr){ for(const w of game.walls){ const nx=Math.max(w.x,Math.min(cx,w.x+TILE)), ny=Math.max(w.y,Math.min(cy,w.y+TILE)); const dx=cx-nx,dy=cy-ny; if(dx*dx+dy*dy<cr*cr) return true; } return false; }
@@ -240,56 +388,46 @@ function updateOverworld(){
     if(!isWall(g.px+g.dir.x*spd,g.py,g.pr)) g.px+=g.dir.x*spd;
     if(!isWall(g.px,g.py+g.dir.y*spd,g.pr)) g.py+=g.dir.y*spd; }
   if(g.encounterCd>0) g.encounterCd--;
-
   for(const m of g.monsters){ if(m.defeated) continue; m.wob+=0.05;
     const dx=g.px-m.x, dy=g.py-m.y, dist=Math.hypot(dx,dy);
-    const isBoss=m.key==="mushmom"; const chaseR=isBoss?160:110; const sp=isBoss?1.1:0.9;
+    const isBoss=MONSTER_TYPES[m.key].kind==="boss"; const chaseR=isBoss?160:110; const sp=isBoss?1.1:0.9;
     if(dist<chaseR) moveEnt(m,(dx/(dist||1))*sp,(dy/(dist||1))*sp,m.r);
     else { const hx=m.homeX-m.x, hy=m.homeY-m.y; moveEnt(m,Math.cos(m.wob)*0.5+hx*0.005,Math.sin(m.wob*1.3)*0.5+hy*0.005,m.r); }
     if(dist<m.r+g.pr-2 && g.encounterCd===0){ startBattle(m); return; }
   }
-
   for(const rel of g.relics){ if(rel.got) continue; rel.t+=0.08;
     if(Math.hypot(g.px-rel.x,g.py-rel.y)<g.pr+11){ rel.got=true; g.collected++;
-      spawn(rel.x,rel.y,"#ff9a3c",16); setMsg(`유물 획득! (${g.collected}/${TOTAL_RELICS})`);
-      if(g.collected>=TOTAL_RELICS && !g.bossSpawned) spawnBoss();
-    } }
-
+      spawn(rel.x,rel.y,"#ff9a3c",16); setMsg(t("relicGet")(g.collected));
+      if(g.collected>=TOTAL_RELICS && !g.bossSpawned) spawnBoss(); } }
   if(g.portal){ g.portal.t+=0.1;
     if(Math.hypot(g.px-g.portal.x,g.py-g.portal.y)<g.pr+14){
       if(g.portal.open){ if(g.floorIdx<FLOORS.length-1) clearFloor(); else endGame(true); }
-      else if(g.bossSpawned && !g.bossDefeated) setMsg(`수호자 ${MONSTER_TYPES[g.bossKey].name}을(를) 먼저 처치하라!`);
-    } }
-
+      else if(g.bossSpawned && !g.bossDefeated) setMsg(t("beatBossFirst")(monName(g.bossKey))); } }
   for(const pt of particles){ pt.x+=pt.vx; pt.y+=pt.vy; pt.vx*=0.92; pt.vy*=0.92; pt.life--; }
   particles=particles.filter(p=>p.life>0);
 }
 
 function spawnBoss(){
-  game.bossSpawned=true;
-  const key=game.bossKey, t=MONSTER_TYPES[key];
-  // 포탈 근처에서 벽이 아닌 자리를 찾아 보스 배치
+  game.bossSpawned=true; const key=game.bossKey, mt=MONSTER_TYPES[key];
   const px=game.portal.x, py=game.portal.y; let bx=px, by=py-TILE*2;
   const cands=[[-2,0],[0,-2],[-2,-1],[-3,0],[0,-3],[-2,-2],[2,0],[0,2]];
-  for(const [dc,dr] of cands){ const cx=px+dc*TILE, cy=py+dr*TILE; if(!isWall(cx,cy,t.r)){ bx=cx; by=cy; break; } }
-  const boss=makeFieldMon(bx,by,key); boss.r=t.r; game.monsters.push(boss);
-  setMsg(`⚠ 던전의 수호자 ${t.name}이(가) 나타났다!`);
-  spawn(bx,by,t.color,32);
+  for(const [dc,dr] of cands){ const cx=px+dc*TILE, cy=py+dr*TILE; if(!isWall(cx,cy,mt.r)){ bx=cx; by=cy; break; } }
+  const boss=makeFieldMon(bx,by,key); boss.r=mt.r; game.monsters.push(boss);
+  setMsg(t("bossAppear")(monName(key))); spawn(bx,by,mt.color,32);
 }
 
 // ---------- 배틀 전환 ----------
 function startBattle(fieldMon){ transition={t:0,mon:fieldMon}; state="transition"; }
 function beginBattleScene(fieldMon){
-  const t=MONSTER_TYPES[fieldMon.key];
-  battle={ fieldMon, enemy:{ key:fieldMon.key, name:t.name, color:t.color, maxHp:t.maxHp, hp:t.maxHp, atk:t.atk, exp:t.exp, kind:t.kind, r:t.r, status:{poison:0} },
+  const mt=MONSTER_TYPES[fieldMon.key];
+  battle={ fieldMon, enemy:{ key:fieldMon.key, maxHp:mt.maxHp, hp:mt.maxHp, atk:mt.atk, exp:mt.exp, kind:mt.kind, r:mt.r, status:{poison:0} },
     phase:"msg", menuIndex:0, skillIndex:0, msgQueue:[], onMsgDone:null, shake:0, enemyFlash:0, playerFlash:0, anim:0, turn:0 };
-  const isBoss=t.kind==="boss";
-  pushMsgs(isBoss?[`⚠ 던전의 수호자 ${t.name}이(가) 길을 막아섰다!`,`강력한 기운이 느껴진다...`]
-                 :[`앗! 야생의 ${t.name}이(가) 나타났다!`], beginPlayerTurn);
+  const isBoss=mt.kind==="boss"; const nm=monName(fieldMon.key);
+  pushMsgs(isBoss?[t("bossBlock")(nm), t("bossAura")]:[t("wildAppear")(nm)], beginPlayerTurn);
   state="battle";
 }
 
-// ---------- 배틀 메시지 ----------
+// ---------- 메시지 ----------
 function pushMsgs(arr,done){ battle.msgQueue=arr.slice(); battle.onMsgDone=done; battle.phase="msg"; }
 function advanceMsg(){ battle.msgQueue.shift(); if(battle.msgQueue.length===0){ const cb=battle.onMsgDone; battle.onMsgDone=null; if(cb) cb(); } }
 function rint(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
@@ -298,36 +436,31 @@ function rint(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
 function beginPlayerTurn(){
   battle.turn++;
   if(player.status.poison>0){ const d=4; player.hp=Math.max(0,player.hp-d); player.status.poison--; battle.playerFlash=8;
-    pushMsgs([`용사는 독으로 ${d}의 데미지를 받았다! (남은 ${player.status.poison}턴)`], ()=>{ if(player.hp<=0) loseBattle(); else showMenu(); }); }
+    pushMsgs([t("playerPoison")(d,player.status.poison)], ()=>{ if(player.hp<=0) loseBattle(); else showMenu(); }); }
   else showMenu();
 }
 function showMenu(){ battle.phase="menu"; battle.menuIndex=0; }
-
 function afterPlayerAction(){ if(battle.enemy.hp<=0){ winBattle(); return; } beginEnemyTurn(); }
-
 function beginEnemyTurn(){
   const e=battle.enemy;
   if(e.status.poison>0){ const d=6; e.hp=Math.max(0,e.hp-d); e.status.poison--; battle.enemyFlash=8;
-    pushMsgs([`${e.name}은(는) 독으로 ${d}의 데미지! (남은 ${e.status.poison}턴)`], ()=>{ if(e.hp<=0) winBattle(); else enemyAct(); }); }
+    pushMsgs([t("enemyPoison")(monName(e.key),d,e.status.poison)], ()=>{ if(e.hp<=0) winBattle(); else enemyAct(); }); }
   else enemyAct();
 }
 function enemyAct(){
-  const e=battle.enemy; let lines=[]; let mul=1, applyPoison=false, label="의 공격!";
-  if(e.kind==="boss"){
-    const pats=BOSS_PATTERNS[e.key]||BOSS_PATTERNS.mushmom;
-    const pat=pats[battle.turn%pats.length];
-    mul=pat.mul; label=pat.label; if(pat.poison) applyPoison=true;
-  } else if(e.kind==="heavy" && Math.random()<0.30){ mul=1.5; label="의 묵직한 일격!"; }
-  else if(e.kind==="poison" && Math.random()<0.4){ applyPoison=true; mul=0.9; label="의 독 포자!"; }
+  const e=battle.enemy; let act="atk", mul=1, applyPoison=false;
+  if(e.kind==="boss"){ const pats=BOSS_PATTERNS[e.key]||BOSS_PATTERNS.mushmom; const pat=pats[battle.turn%pats.length];
+    act=pat.act; mul=pat.mul; if(pat.poison) applyPoison=true; }
+  else if(e.kind==="heavy" && Math.random()<0.30){ act="heavy"; mul=1.5; }
+  else if(e.kind==="poison" && Math.random()<0.4){ act="pspore"; mul=0.9; applyPoison=true; }
   let dmg=Math.round((e.atk+rint(0,2))*mul);
   player.hp=Math.max(0,player.hp-dmg); battle.playerFlash=10; battle.shake=mul>1.3?14:8;
-  lines.push(`${e.name}${label} 용사는 ${dmg}의 데미지!`);
-  if(applyPoison && player.status.poison<=0 && Math.random()<0.8){ player.status.poison=4; lines.push("용사가 중독되었다!"); }
+  let lines=[t("enemyHit")(monName(e.key),dmg,act)];
+  if(applyPoison && player.status.poison<=0 && Math.random()<0.8){ player.status.poison=4; lines.push(t("playerPoisoned")); }
   pushMsgs(lines, ()=>{ if(player.hp<=0) loseBattle(); else beginPlayerTurn(); });
 }
 
 // ---------- 배틀 입력 ----------
-const MAIN_MENU=["공격","스킬","물약","도망"];
 function handleBattleKey(k){
   if(!battle) return;
   if(battle.phase==="msg"){ if(k===" "||k==="enter") advanceMsg(); return; }
@@ -337,65 +470,57 @@ function handleBattleKey(k){
     else if(k===" "||k==="enter") chooseMain(battle.menuIndex);
     else if(k>="1"&&k<="4"){ battle.menuIndex=+k-1; chooseMain(battle.menuIndex); }
   } else if(battle.phase==="skillmenu"){
-    const n=player.cls?CLASSES[player.cls].skills.length:0;
+    const n=CLASSES[player.cls].skills.length;
     if(k==="arrowup"||k==="w") battle.skillIndex=(battle.skillIndex+n)%(n+1);
     else if(k==="arrowdown"||k==="s") battle.skillIndex=(battle.skillIndex+1)%(n+1);
     else if(k==="escape"||k==="backspace") battle.phase="menu";
     else if(k===" "||k==="enter"){ if(battle.skillIndex===n) battle.phase="menu"; else useSkill(battle.skillIndex); }
   }
 }
-
 function chooseMain(i){
-  const e=battle.enemy;
-  if(i===0){ // 공격
-    const {dmg,crit}=calcHit(pAtk(),0.95);
-    if(dmg>0){ e.hp=Math.max(0,e.hp-dmg); battle.enemyFlash=10; battle.shake=crit?14:8; spawnB(560,150,e.color,crit?16:8);
-      pushMsgs([`용사의 공격!${crit?" 회심의 일격!":""} ${e.name}에게 ${dmg}의 데미지!`], afterPlayerAction); }
-    else pushMsgs([`용사의 공격! ...빗나갔다!`], afterPlayerAction);
+  const e=battle.enemy, enm=monName(e.key);
+  if(i===0){ const {dmg,crit}=calcHit(pAtk(),0.95);
+    if(dmg>0){ e.hp=Math.max(0,e.hp-dmg); battle.enemyFlash=10; battle.shake=crit?14:8; spawnB(560,150,MONSTER_TYPES[e.key].color,crit?16:8);
+      pushMsgs([t("atkMsg")(enm,dmg,crit)], afterPlayerAction); }
+    else pushMsgs([t("atkMiss")], afterPlayerAction);
   } else if(i===1){ battle.phase="skillmenu"; battle.skillIndex=0; }
-  else if(i===2){ // 물약
-    if(player.potions<=0){ pushMsgs(["물약이 없다!"], showMenu); return; }
+  else if(i===2){ if(player.potions<=0){ pushMsgs([t("noPotion")], showMenu); return; }
     player.potions--; const b=player.hp; player.hp=Math.min(player.maxHp,player.hp+42);
-    pushMsgs([`물약을 사용했다! HP ${player.hp-b} 회복!`], afterPlayerAction);
-  } else if(i===3){ // 도망 (보스는 도망 불가)
-    if(e.kind==="boss"){ pushMsgs(["보스에게서는 도망칠 수 없다!"], showMenu); return; }
-    if(Math.random()<0.5) pushMsgs(["무사히 도망쳤다!"], exitBattle);
-    else pushMsgs(["도망칠 수 없었다!"], beginEnemyTurn);
+    pushMsgs([t("potionMsg")(player.hp-b)], afterPlayerAction);
+  } else if(i===3){ if(e.kind==="boss"){ pushMsgs([t("cantRunBoss")], showMenu); return; }
+    if(Math.random()<0.5) pushMsgs([t("ranAway")], exitBattle); else pushMsgs([t("cantRun")], beginEnemyTurn);
   }
 }
-
 function calcHit(atk,acc,mul){ mul=mul||1; if(Math.random()>acc) return {dmg:0,crit:false};
   const crit=Math.random()<player.crit; let d=Math.round((atk+rint(0,3))*mul*(crit?1.6:1)); return {dmg:Math.max(1,d),crit}; }
-
 function useSkill(idx){
-  const sk=CLASSES[player.cls].skills[idx], e=battle.enemy;
-  if(player.mp<sk.mp){ pushMsgs(["MP가 부족하다!"], ()=>{ battle.phase="menu"; }); return; }
+  const sk=CLASSES[player.cls].skills[idx], e=battle.enemy, skn=skName(sk), enm=monName(e.key);
+  if(player.mp<sk.mp){ pushMsgs([t("noMp")], ()=>{ battle.phase="menu"; }); return; }
   player.mp-=sk.mp;
   if(sk.kind==="heal"){ const b=player.hp; player.hp=Math.min(player.maxHp,player.hp+sk.heal);
-    spawnB(220,330,"#7CFC00",14); pushMsgs([`${sk.name}! HP ${player.hp-b} 회복!`], afterPlayerAction); return; }
-  if(sk.kind==="buff"){ player.atkBuff+=sk.atk; pushMsgs([`${sk.name}! 공격력이 ${sk.atk} 상승했다! (현재 +${player.atkBuff})`], afterPlayerAction); return; }
-  // 공격 스킬 (다단히트)
-  let lines=[], total=0, anyCrit=false, hitCount=0;
+    spawnB(220,330,"#7CFC00",14); pushMsgs([t("skillHeal")(skn,player.hp-b)], afterPlayerAction); return; }
+  if(sk.kind==="buff"){ player.atkBuff+=sk.atk; pushMsgs([t("skillBuff")(skn,sk.atk,player.atkBuff)], afterPlayerAction); return; }
+  let total=0, anyCrit=false, hitCount=0;
   for(let h=0;h<sk.hits;h++){ const {dmg,crit}=calcHit(pAtk(),sk.acc,sk.mul); if(dmg>0){ e.hp=Math.max(0,e.hp-dmg); total+=dmg; hitCount++; if(crit) anyCrit=true; } }
-  battle.enemyFlash=12; battle.shake=anyCrit?16:12; spawnB(560,150,e.color,12);
-  if(hitCount===0) lines.push(`${sk.name}! ...모두 빗나갔다!`);
-  else if(sk.hits>1) lines.push(`${sk.name}! ${hitCount}회 적중, 총 ${total}의 데미지!${anyCrit?" 회심!":""}`);
-  else lines.push(`${sk.name}!${anyCrit?" 회심의 일격!":""} ${e.name}에게 ${total}의 데미지!`);
-  if(sk.poison && e.hp>0 && e.status.poison<=0){ e.status.poison=4; lines.push(`${e.name}이(가) 중독되었다!`); }
+  battle.enemyFlash=12; battle.shake=anyCrit?16:12; spawnB(560,150,MONSTER_TYPES[e.key].color,12);
+  let lines=[];
+  if(hitCount===0) lines.push(t("skillAllMiss")(skn));
+  else if(sk.hits>1) lines.push(t("skillMulti")(skn,hitCount,total,anyCrit));
+  else lines.push(t("skillSingle")(skn,enm,total,anyCrit));
+  if(sk.poison && e.hp>0 && e.status.poison<=0){ e.status.poison=4; lines.push(t("enemyPoisoned")(enm)); }
   pushMsgs(lines, afterPlayerAction);
 }
-
 function winBattle(){
   const e=battle.enemy; battle.fieldMon.defeated=true; player.exp+=e.exp; player.atkBuff=0;
-  let lines=[`${e.name}을(를) 쓰러뜨렸다!`, `경험치 ${e.exp} 획득!`];
+  let lines=[t("defeated")(monName(e.key)), t("expGain")(e.exp)];
   while(player.exp>=player.expNext){ player.exp-=player.expNext; player.lv++; player.expNext=Math.round(player.expNext*1.5);
     player.maxHp+=11; player.hp=player.maxHp; player.atk+=2; player.maxMp+=3; player.mp=player.maxMp;
-    lines.push(`✨ 레벨 업! Lv.${player.lv} (HP·공격력 상승, 완전 회복!)`); }
+    lines.push(t("levelUp")(player.lv)); }
   if(e.kind==="boss"){ game.bossDefeated=true; game.portal.open=true;
-    lines.push(game.floorIdx<FLOORS.length-1 ? "🌀 더 깊은 곳으로 가는 포탈이 열렸다!" : "🌀 탈출 포탈이 열렸다! 던전을 탈출하라!"); }
+    lines.push(game.floorIdx<FLOORS.length-1 ? t("portalDeeper") : t("portalEscape")); }
   pushMsgs(lines, exitBattle);
 }
-function loseBattle(){ pushMsgs(["용사는 쓰러졌다...","던전에서 정신을 잃었다."], ()=>endGame(false)); }
+function loseBattle(){ pushMsgs([t("loseLine1"), t("loseLine2")], ()=>endGame(false)); }
 function exitBattle(){ state="overworld"; game.encounterCd=45; player.status.poison=0; battle=null; }
 
 // ---------- 렌더: 필드 ----------
@@ -410,21 +535,19 @@ function drawOverworld(){
   if(game.portal){ const pt=game.portal; ctx.save(); ctx.translate(pt.x,pt.y);
     if(pt.open){ for(let i=0;i<3;i++){ ctx.beginPath(); ctx.strokeStyle=`rgba(120,200,255,${0.7-i*0.2})`; ctx.lineWidth=3; ctx.arc(0,0,12+i*5+Math.sin(pt.t+i)*3,0,6.28); ctx.stroke(); } ctx.fillStyle="rgba(150,220,255,.5)"; ctx.beginPath(); ctx.arc(0,0,10,0,6.28); ctx.fill(); }
     else { ctx.fillStyle="#444"; ctx.beginPath(); ctx.arc(0,0,12,0,6.28); ctx.fill(); ctx.fillStyle="#888"; ctx.font="14px sans-serif"; ctx.textAlign="center"; ctx.fillText("🔒",0,5); } ctx.restore(); }
-  for(const m of game.monsters){ if(m.defeated) continue; const t=MONSTER_TYPES[m.key];
+  for(const m of game.monsters){ if(m.defeated) continue; const mt=MONSTER_TYPES[m.key];
     ctx.save(); ctx.translate(m.x,m.y+Math.sin(m.wob)*1.5);
-    if(t.kind==="boss"){ ctx.shadowColor="#ff4fd8"; ctx.shadowBlur=16; }
-    ctx.fillStyle=t.color; ctx.beginPath(); ctx.arc(0,0,m.r,0,6.28); ctx.fill();
+    if(mt.kind==="boss"){ ctx.shadowColor="#ff4fd8"; ctx.shadowBlur=16; }
+    ctx.fillStyle=mt.color; ctx.beginPath(); ctx.arc(0,0,m.r,0,6.28); ctx.fill();
     ctx.fillStyle="#222"; ctx.beginPath(); ctx.arc(-m.r*0.35,-3,2,0,6.28); ctx.arc(m.r*0.35,-3,2,0,6.28); ctx.fill();
     ctx.restore(); }
   drawHero(game.px,game.py,game.pr,game.dir,player.cls);
   for(const pt of particles){ ctx.globalAlpha=Math.max(0,pt.life/35); ctx.fillStyle=pt.color; ctx.beginPath(); ctx.arc(pt.x,pt.y,pt.r,0,6.28); ctx.fill(); }
   ctx.globalAlpha=1;
 }
-
 function drawHero(x,y,r,dir,clsKey){
   const c=CLASSES[clsKey]||CLASSES.warrior;
   ctx.save(); ctx.translate(x,y);
-  // 무기 힌트
   if(c.weapon==="sword"){ ctx.strokeStyle="#ddd"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(r,2); ctx.lineTo(r+8,-6); ctx.stroke(); }
   if(c.weapon==="staff"){ ctx.strokeStyle="#caa15a"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(r-2,4); ctx.lineTo(r+6,-8); ctx.stroke(); ctx.fillStyle="#9fd0ff"; ctx.beginPath(); ctx.arc(r+6,-9,2.5,0,6.28); ctx.fill(); }
   if(c.weapon==="bow"){ ctx.strokeStyle="#2faf63"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(r+3,-1,7,-1.2,1.2); ctx.stroke(); }
@@ -451,16 +574,15 @@ function drawBattle(){
   const e=battle.enemy, isBoss=e.kind==="boss"; const er=isBoss?60:42;
   ctx.save(); ctx.translate(560,150+Math.sin(battle.anim)*4);
   if(isBoss){ ctx.shadowColor="#ff4fd8"; ctx.shadowBlur=24; }
-  ctx.fillStyle=battle.enemyFlash>0?"#fff":e.color; ctx.beginPath(); ctx.arc(0,0,er,0,6.28); ctx.fill();
+  ctx.fillStyle=battle.enemyFlash>0?"#fff":MONSTER_TYPES[e.key].color; ctx.beginPath(); ctx.arc(0,0,er,0,6.28); ctx.fill();
   ctx.fillStyle="#222"; ctx.beginPath(); ctx.arc(-er*0.33,-er*0.18,er*0.14,0,6.28); ctx.arc(er*0.33,-er*0.18,er*0.14,0,6.28); ctx.fill();
   ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(-er*0.30,-er*0.22,er*0.05,0,6.28); ctx.arc(er*0.38,-er*0.22,er*0.05,0,6.28); ctx.fill();
   if(e.status.poison>0){ ctx.fillStyle="rgba(120,220,80,.5)"; for(let i=0;i<5;i++){ ctx.beginPath(); ctx.arc(Math.cos(battle.anim+i)*er*0.7,Math.sin(battle.anim*1.3+i)*er*0.6,3,0,6.28); ctx.fill(); } }
   ctx.restore();
-  drawPlate(440,60,`${e.name}${isBoss?" 👑":""}`,e.hp,e.maxHp,false,e.status.poison>0);
-
+  drawPlate(440,60,monName(e.key)+(isBoss?" 👑":""),e.hp,e.maxHp,false,e.status.poison>0);
   ctx.save(); ctx.translate(220,330); ctx.scale(2.6,2.6); drawHero(0,0,12,{x:0,y:-1},player.cls);
   if(battle.playerFlash>0){ ctx.globalAlpha=0.5; ctx.fillStyle="#f55"; ctx.beginPath(); ctx.arc(0,0,14,0,6.28); ctx.fill(); ctx.globalAlpha=1; } ctx.restore();
-  drawPlate(360,350,`${player.name} Lv.${player.lv}`,player.hp,player.maxHp,true,player.status.poison>0);
+  drawPlate(360,350,`${playerName()} Lv.${player.lv}`,player.hp,player.maxHp,true,player.status.poison>0);
   ctx.restore();
   drawBattleBox();
 }
@@ -468,7 +590,7 @@ function drawPlate(x,y,name,hp,maxHp,showNums,poisoned){
   ctx.save(); ctx.fillStyle="rgba(0,0,0,.55)"; roundRect(x,y,300,56,10); ctx.fill();
   ctx.strokeStyle="rgba(255,255,255,.2)"; ctx.lineWidth=1; roundRect(x,y,300,56,10); ctx.stroke();
   ctx.fillStyle="#fff"; ctx.font="bold 16px 'Malgun Gothic',sans-serif"; ctx.textAlign="left"; ctx.fillText(name,x+14,y+24);
-  if(poisoned){ ctx.fillStyle="#8de060"; ctx.font="12px sans-serif"; ctx.fillText("☠ 중독",x+14,y+50); }
+  if(poisoned){ ctx.fillStyle="#8de060"; ctx.font="12px sans-serif"; ctx.fillText(t("poisonTag"),x+14,y+50); }
   const bx=x+14,by=y+32,bw=272,bh=10; ctx.fillStyle="#3a1f1f"; roundRect(bx,by,bw,bh,5); ctx.fill();
   const ratio=Math.max(0,hp/maxHp), col=ratio>0.5?"#5fdb6b":ratio>0.2?"#ffd24a":"#ff5a5a";
   ctx.fillStyle=col; roundRect(bx,by,bw*ratio,bh,5); ctx.fill();
@@ -482,30 +604,29 @@ function drawBattleBox(){
   if(battle.phase==="msg"){ ctx.fillStyle="#fff"; ctx.font="18px 'Malgun Gothic',sans-serif"; ctx.textAlign="left";
     wrapText(battle.msgQueue[0]||"",bx+22,by+38,bw-180,26);
     ctx.fillStyle="#ff9a3c"; ctx.font="12px sans-serif"; ctx.textAlign="right"; ctx.fillText("▼ Enter/Space",bx+bw-16,by+bh-14); return; }
-  // 좌측 상태
   ctx.textAlign="left"; ctx.fillStyle="#9fd"; ctx.font="13px sans-serif";
   ctx.fillText(`HP ${player.hp}/${player.maxHp}`,bx+22,by+34);
   ctx.fillText(`MP ${player.mp}/${player.maxMp}`,bx+22,by+56);
-  ctx.fillText(`물약 x${player.potions}`,bx+22,by+78);
-  if(player.atkBuff>0){ ctx.fillStyle="#ffd24a"; ctx.fillText(`공격력 +${player.atkBuff}`,bx+22,by+98); }
+  ctx.fillText(`${t("potShort")} x${player.potions}`,bx+22,by+78);
+  if(player.atkBuff>0){ ctx.fillStyle="#ffd24a"; ctx.fillText(t("atkBuff")(player.atkBuff),bx+22,by+98); }
   if(battle.phase==="menu"){
-    ctx.fillStyle="#aaa"; ctx.font="13px sans-serif"; ctx.fillText("무엇을 할까?",bx+170,by+22);
-    const labels=["⚔ 공격","✦ 스킬","🧪 물약","🏃 도망"];
+    ctx.fillStyle="#aaa"; ctx.font="13px sans-serif"; ctx.fillText(t("whatDo"),bx+170,by+22);
+    const labels=t("menuMain");
     for(let i=0;i<4;i++){ const col=i%2,row=Math.floor(i/2), mx=bx+170+col*230, my=by+44+row*38, sel=i===battle.menuIndex;
       if(sel){ ctx.fillStyle="rgba(255,154,60,.25)"; roundRect(mx-8,my-19,216,30,6); ctx.fill(); ctx.fillStyle="#ff9a3c"; ctx.font="bold 16px sans-serif"; ctx.fillText("▶",mx-28,my+3); }
       ctx.fillStyle=sel?"#fff":"#cfcfcf"; ctx.font=(sel?"bold ":"")+"16px 'Malgun Gothic',sans-serif"; ctx.fillText(labels[i],mx,my+3); }
   } else if(battle.phase==="skillmenu"){
     const skills=CLASSES[player.cls].skills;
-    ctx.fillStyle="#aaa"; ctx.font="13px sans-serif"; ctx.fillText("스킬 선택 (Esc: 뒤로)",bx+170,by+20);
+    ctx.fillStyle="#aaa"; ctx.font="13px sans-serif"; ctx.fillText(t("skillPick"),bx+170,by+20);
     for(let i=0;i<skills.length;i++){ const s=skills[i], my=by+38+i*22, sel=i===battle.skillIndex, can=player.mp>=s.mp;
       if(sel){ ctx.fillStyle="rgba(255,154,60,.25)"; roundRect(bx+162,my-15,bw-184,22,5); ctx.fill(); ctx.fillStyle="#ff9a3c"; ctx.font="bold 14px sans-serif"; ctx.textAlign="left"; ctx.fillText("▶",bx+150,my+1); }
       ctx.fillStyle=can?(sel?"#fff":"#ddd"):"#777"; ctx.font=(sel?"bold ":"")+"14px 'Malgun Gothic',sans-serif"; ctx.textAlign="left";
-      ctx.fillText(`${s.name}`,bx+170,my+1);
+      ctx.fillText(skName(s),bx+170,my+1);
       ctx.fillStyle=can?"#9fd0ff":"#a55"; ctx.font="12px sans-serif"; ctx.fillText(`MP ${s.mp}`,bx+360,my+1);
-      ctx.fillStyle="#999"; ctx.fillText(s.info,bx+430,my+1); }
+      ctx.fillStyle="#999"; ctx.fillText(skInfo(s),bx+430,my+1); }
     const bi=skills.length, my=by+38+bi*22, sel=battle.skillIndex===bi;
     if(sel){ ctx.fillStyle="#ff9a3c"; ctx.font="bold 14px sans-serif"; ctx.fillText("▶",bx+150,my+1); }
-    ctx.fillStyle=sel?"#fff":"#cfcfcf"; ctx.font="14px sans-serif"; ctx.fillText("← 뒤로",bx+170,my+1);
+    ctx.fillStyle=sel?"#fff":"#cfcfcf"; ctx.font="14px sans-serif"; ctx.fillText(t("back"),bx+170,my+1);
   }
 }
 
@@ -515,19 +636,19 @@ function wrapText(text,x,y,maxW,lh){ let line="",yy=y; for(const ch of text.spli
 function spawn(x,y,color,n){ for(let i=0;i<n;i++){ const a=Math.random()*6.28,s=1+Math.random()*3; particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:20+Math.random()*15,color,r:2+Math.random()*2}); } }
 function spawnB(x,y,color,n){ for(let i=0;i<n;i++){ const a=Math.random()*6.28,s=1+Math.random()*4; particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:18+Math.random()*12,color,r:2+Math.random()*2}); } }
 let msgTimer=0;
-function setMsg(t){ document.getElementById("msg").textContent=t; msgTimer=220; }
+function setMsg(txt){ document.getElementById("msg").textContent=txt; msgTimer=220; }
 
 // ---------- HUD ----------
 function updateHud(){
-  document.getElementById("classbox").textContent=(player?player.name:"-")+" · "+(game?game.short:"");
+  document.getElementById("classbox").textContent=playerName()+" · "+game.short;
   document.getElementById("lvtxt").textContent=player.lv;
   document.getElementById("hpfill").style.width=(player.hp/player.maxHp*100)+"%";
   document.getElementById("hptxt").textContent=`${player.hp}/${player.maxHp}`;
   document.getElementById("mpfill").style.width=(player.mp/player.maxMp*100)+"%";
   document.getElementById("pottxt").textContent=player.potions;
   document.getElementById("relics").textContent=`${game.collected} / ${TOTAL_RELICS}`;
-  if(msgTimer>0){ msgTimer--; if(msgTimer===0){ const bn=MONSTER_TYPES[game.bossKey].name;
-    document.getElementById("msg").textContent=game.bossDefeated?"포탈로 이동하라!":(game.bossSpawned?`${bn}을(를) 처치하라!`:"유물 5개를 모으자!"); } }
+  if(msgTimer>0){ msgTimer--; if(msgTimer===0){ const bn=monName(game.bossKey);
+    document.getElementById("msg").textContent = game.bossDefeated ? t("goPortal") : (game.bossSpawned ? t("beatBoss")(bn) : t("relicGoal")); } }
 }
 
 // ---------- 루프 ----------
@@ -538,16 +659,16 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-// ---------- 상태 전이 ----------
+// ---------- 화면 ----------
 function showClassSelect(){
   document.getElementById("startScreen").classList.add("hidden");
   const cont=document.getElementById("classCards"); cont.innerHTML="";
   for(const key of Object.keys(CLASSES)){ const c=CLASSES[key];
     const div=document.createElement("div"); div.className="ccard";
-    div.innerHTML=`<div class="emoji">${c.emoji}</div><h3>${c.name}</h3>
+    div.innerHTML=`<div class="emoji">${c.emoji}</div><h3>${clsName(c)}</h3>
       <div style="font-size:12px;opacity:.8">HP ${c.maxHp} · MP ${c.maxMp} · ATK ${c.atk}</div>
-      <ul>${c.desc.map(d=>`<li>${d}</li>`).join("")}
-      ${c.skills.map(s=>`<li style="color:#ffcf8b">${s.name} <span style="opacity:.6">(MP${s.mp})</span></li>`).join("")}</ul>`;
+      <ul>${c.desc[LANG].map(d=>`<li>${d}</li>`).join("")}
+      ${c.skills.map(s=>`<li style="color:#ffcf8b">${skName(s)} <span style="opacity:.6">(MP${s.mp})</span></li>`).join("")}</ul>`;
     div.onclick=()=>startGame(key); cont.appendChild(div); }
   document.getElementById("classScreen").classList.remove("hidden");
 }
@@ -556,34 +677,61 @@ function startGame(classKey){
   document.getElementById("classScreen").classList.add("hidden");
   document.getElementById("endScreen").classList.add("hidden");
   document.getElementById("floorScreen").classList.add("hidden");
-  setMsg("유물 5개를 모으자!");
+  setMsg(t("relicGoal"));
 }
 function clearFloor(){
   state="floorclear";
-  // 보상: HP/MP 완전 회복 + 물약 보충
-  player.hp=player.maxHp; player.mp=player.maxMp; player.potions=Math.max(player.potions,0)+2;
-  const cur=FLOORS[game.floorIdx], nxt=FLOORS[game.floorIdx+1];
-  document.getElementById("floorTitle").textContent=`✨ ${cur.short} 클리어!`;
-  document.getElementById("floorText").textContent=`${cur.name}을(를) 정복했다! HP·MP를 회복하고 물약 2개를 얻었다.\n더 깊은 곳, ${nxt.name}이(가) 당신을 기다린다...`;
-  document.getElementById("floorBtn").textContent=`${nxt.short}(으)로 내려가기`;
+  player.hp=player.maxHp; player.mp=player.maxMp; player.potions=player.potions+2;
+  document.getElementById("floorTitle").textContent=t("floorClearTitle")(game.short);
+  document.getElementById("floorText").textContent=t("floorClearText")(floorName(game.floorIdx), floorName(game.floorIdx+1));
+  document.getElementById("floorBtn").textContent=t("floorBtn")(FLOORS[game.floorIdx+1].short);
   document.getElementById("floorScreen").classList.remove("hidden");
 }
 function nextFloor(){
   const ni=game.floorIdx+1; game=makeWorld(ni); battle=null; transition=null; particles=[]; state="overworld";
   document.getElementById("floorScreen").classList.add("hidden");
-  setMsg("더 깊은 곳... 유물 5개를 모으자!");
+  setMsg(t("relicGoalDeep"));
 }
 function endGame(won){ state="over"; const es=document.getElementById("endScreen");
-  document.getElementById("endTitle").textContent=won?"🎉 탈출 성공!":"💀 게임 오버";
-  document.getElementById("endText").textContent=won
-    ?`최종 보스 자쿰을 물리치고 던전의 모든 비밀을 정복했다! 최종 ${player.name} Lv.${player.lv} 🏆`
-    :`${game.short}에서 유물 ${game.collected}/${TOTAL_RELICS}개를 모았다. 다시 도전해보자!`;
+  document.getElementById("endTitle").textContent=won?t("winTitle"):t("loseTitle");
+  document.getElementById("endText").textContent=won ? t("winText")(playerName(),player.lv) : t("loseText")(game.short,game.collected);
   es.classList.remove("hidden");
 }
+
+// ---------- 정적 텍스트 적용 / 언어 토글 ----------
+function applyStaticText(){
+  document.documentElement.lang = LANG;
+  document.getElementById("hint").textContent = t("hint");
+  document.getElementById("lblPot").textContent = t("lblPot");
+  document.getElementById("lblRelic").textContent = t("lblRelic");
+  document.getElementById("startP1").textContent = t("startP1");
+  document.getElementById("startP2").textContent = t("startP2");
+  document.getElementById("startBtn").textContent = t("btnStart");
+  document.getElementById("classTitle").textContent = t("classTitle");
+  document.getElementById("retryBtn").textContent = t("btnRetry");
+  document.getElementById("langBtn").textContent = t("langBtn");
+  // 보이는 화면 갱신
+  if(!document.getElementById("classScreen").classList.contains("hidden")) showClassSelect();
+  if(state==="floorclear"){ clearFloorRefresh(); }
+  if(state==="over" && player && game){ endGameRefresh(); }
+}
+function clearFloorRefresh(){
+  document.getElementById("floorTitle").textContent=t("floorClearTitle")(game.short);
+  document.getElementById("floorText").textContent=t("floorClearText")(floorName(game.floorIdx), floorName(game.floorIdx+1));
+  document.getElementById("floorBtn").textContent=t("floorBtn")(FLOORS[game.floorIdx+1].short);
+}
+function endGameRefresh(){
+  const won=game.bossDefeated && game.portal && game.portal.open && state==="over" && player.hp>0;
+  document.getElementById("endTitle").textContent=won?t("winTitle"):t("loseTitle");
+  document.getElementById("endText").textContent=won ? t("winText")(playerName(),player.lv) : t("loseText")(game.short,game.collected);
+}
+function toggleLang(){ LANG = (LANG==="en")?"ko":"en"; try{ localStorage.setItem("mra_lang",LANG); }catch(e){} applyStaticText(); }
 
 document.getElementById("startBtn").onclick=showClassSelect;
 document.getElementById("retryBtn").onclick=showClassSelect;
 document.getElementById("floorBtn").onclick=nextFloor;
+document.getElementById("langBtn").onclick=toggleLang;
+applyStaticText();
 loop();
 </script>
 </body>
