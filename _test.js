@@ -30,7 +30,7 @@ globalThis.__api = {
   get state(){return state;}, get game(){return game;}, get battle(){return battle;}, get player(){return player;},
   CLASSES, MONSTER_TYPES, FLOORS, BOSS_PATTERNS,
   get LANG(){return LANG;}, setLang:function(v){LANG=v;}, t, monName, clsName, applyStaticText,
-  startGame, handleBattleKey, setKeys:function(o){keys=o;}, beginBattleScene, clearFloor, nextFloor, spawnBoss,
+  startGame, handleBattleKey, setKeys:function(o){keys=o;}, beginBattleScene, clearFloor, nextFloor, spawnBoss, showClassSelect, endGame,
   loop_once:function(){
     if(state==="overworld"){ updateOverworld(); if(state==="overworld") drawOverworld(); }
     else if(state==="transition"){ updateTransition(); drawTransition(); }
@@ -53,6 +53,14 @@ api.setLang("en");
 log.push("i18n monster: en='" + en_mon + "' ko='" + ko_mon + "' | class: en='" + en_cls + "' ko='" + ko_cls + "' | ui: en='" + en_ui + "' ko='" + ko_ui + "'");
 log.push("i18n enemyHit en: " + api.t("enemyHit")("Mushmom", 12, "spore"));
 api.setLang("ko"); log.push("i18n enemyHit ko: " + api.t("enemyHit")("머쉬맘", 12, "spore")); api.setLang("en");
+
+// 재시작(Play Again) 경로: 종료 -> 직업선택 -> 재시작이 깨지지 않는지
+api.startGame("warrior"); api.endGame(false);
+const overState = api.state;
+api.showClassSelect();                      // 다시 하기 버튼이 부르는 함수
+const afterRetry = api.state;               // title 이어야 (오버레이 정리됨)
+api.startGame("mage");                      // 직업 다시 선택
+log.push("retry flow: end=" + overState + " -> classSelect=" + afterRetry + " -> restart=" + api.state + " lv=" + api.player.lv);
 
 // 데이터 점검
 log.push("classes: " + Object.keys(api.CLASSES).join(",") + " | monsters: " + Object.keys(api.MONSTER_TYPES).length);

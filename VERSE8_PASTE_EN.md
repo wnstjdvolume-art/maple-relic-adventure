@@ -123,6 +123,34 @@ critical, skill, heal, pickup, level-up, boss, and win/lose. Add a mute toggle i
 
 ---
 
+## ⭐ D. 메이플 공식 에셋 적용 (필수 — 도형 → MapleStory 에셋)
+
+> 로컬 `index.html`은 저작권 때문에 **도형 그래픽**을 씁니다. MSU Space에서는 **반드시 메이플 공식
+> 에셋**으로 교체해야 합니다. 다행히 몬스터 16종+보스 2종이 전부 실제 메이플 몬스터라 1:1 매핑됩니다.
+> 빌드 후 아래를 **그대로 붙여넣어** 도형을 전부 공식 스프라이트로 바꾸세요.
+
+```
+Replace ALL placeholder shapes with official MapleStory (MSU) assets from the asset library:
+
+- Player classes (with idle/walk animations):
+  Warrior -> a Warrior-type MapleStory character; Mage -> a Magician-type character;
+  Archer -> a Bowman/Archer-type character.
+
+- Monsters — use the official MapleStory monster sprites that match these EXACT names:
+  Blue Snail, Snail, Red Snail, Ribbon Pig, Green Mushroom, Orange Mushroom, Bubbling, Slime,
+  Stump, Zombie Mushroom, Dark Stump, Wild Boar, Curse Eye, Wild Kargo, Yeti, Jr. Balrog.
+  Bosses: Mushmom (B1) and Zakum (final).
+
+- Background / tiles: a Henesys-style dungeon tileset (e.g., a cave/dungeon map).
+- BGM: MapleStory field / dungeon / boss tracks. SFX: MapleStory attack/skill/pickup/level-up sounds.
+- Relic pickup: a shiny MapleStory item or scroll icon. Portal: the MapleStory portal effect.
+
+Use ONLY official MapleStory / MSU assets — no placeholder shapes, no external or copyrighted art.
+Keep all gameplay, balance, classes, skills, floors, language toggle, mobile controls, and audio.
+```
+
+---
+
 ## C. 자주 쓰는 수정(보강) 프롬프트 예시
 
 ```

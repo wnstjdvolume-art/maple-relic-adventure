@@ -756,7 +756,11 @@ function loop(){
 
 // ---------- 화면 ----------
 function showClassSelect(){
+  // 다른 오버레이를 모두 숨겨야 직업 선택이 가려지지 않음(다시 하기 버그 수정)
   document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("endScreen").classList.add("hidden");
+  document.getElementById("floorScreen").classList.add("hidden");
+  state="title";
   const cont=document.getElementById("classCards"); cont.innerHTML="";
   for(const key of Object.keys(CLASSES)){ const c=CLASSES[key];
     const div=document.createElement("div"); div.className="ccard";
