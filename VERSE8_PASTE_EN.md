@@ -10,7 +10,7 @@
 ## A. 원샷 마스터 프롬프트 (한 번에 붙여넣기)
 
 ```
-Build a top-down, turn-based RPG using MapleStory assets. It plays like Pokémon:
+Build a top-down, turn-based RPG using MapleStory assets. It uses bump-to-battle encounters:
 walk around a dungeon, and when you bump into a monster, the screen transitions into a turn-based battle.
 
 OVERWORLD
@@ -28,7 +28,7 @@ CLASSES (choose at game start via cards showing icon, stats, and skills)
 - Archer: HP 60, MP 18, ATK 10, crit 25%. Skills: Double Shot (MP4, 2 hits x1.0),
   Triple Shot (MP8, 3 hits x0.85), Focus (MP4, +5 ATK for the rest of the battle).
 
-BATTLE (Pokémon-style turn-based)
+BATTLE (encounter-based turn-based)
 - Enemy sprite + name + HP bar at top-right; player + name + Lv + HP bar at bottom-left;
   message box at the bottom (advance text with Enter/Space).
 - Command menu: Attack / Skill / Potion / Run. "Skill" opens a submenu of the class's skills
@@ -72,6 +72,20 @@ LANGUAGE (important for this global game jam)
 - Default language is ENGLISH. Provide Korean as an optional language with a toggle button
   (top-right). All UI text and battle messages must switch between English and Korean.
   Persist the choice. (This game is judged in a global jam, so English-first is required.)
+
+MOBILE
+- Make it playable on mobile: a responsive canvas that scales to the screen, plus on-screen
+  touch controls — a D-pad to move and navigate menus, an A button (confirm/Enter) and a B button
+  (back/Esc). Show these controls on touch devices / small screens. Touch-friendly UI.
+
+AUDIO
+- Add original background music with distinct field / battle / boss themes, and sound effects
+  for hit, critical, skill, heal, relic pickup, level-up, boss appearance, and win/lose.
+  Include a mute toggle in the top bar. Use only MapleStory-provided audio or original sounds.
+
+IP / NAMING (required)
+- Do NOT reference any external/unlicensed IP or other game's name in the title, description, or
+  in-game text. Describe the mechanic neutrally (bump-to-battle / encounter-based turn-based).
 ```
 
 ---
@@ -94,6 +108,17 @@ LANGUAGE (important for this global game jam)
 ```
 Add a language toggle button at the top-right. Default language is English; allow switching to
 Korean. Translate all UI labels and battle messages for both. Remember the choice.
+```
+12. Mobile: responsive canvas + on-screen D-pad and A/B buttons (shown on touch devices).
+```
+Make the game playable on mobile: scale the canvas responsively and add on-screen touch controls —
+a D-pad to move and navigate menus, an A button to confirm and a B button to go back. Show these
+on touch devices and small screens.
+```
+13. Audio: BGM (field/battle/boss) + SFX + mute toggle. No external/copyrighted audio.
+```
+Add background music with separate field, battle, and boss themes, plus sound effects for hit,
+critical, skill, heal, pickup, level-up, boss, and win/lose. Add a mute toggle in the top bar.
 ```
 
 ---

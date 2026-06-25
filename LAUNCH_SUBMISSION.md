@@ -31,12 +31,12 @@ Maple Relic Adventure
 ### 짧은 설명 (Short description, ~1–2문장)
 - 🇰🇷
 ```
-포켓몬처럼 필드를 탐험하다 몬스터와 부딪히면 턴제 배틀이 시작되는 메이플 던전 RPG.
+필드를 탐험하다 몬스터와 부딪히면 턴제 배틀이 시작되는 메이플 던전 RPG.
 전사·마법사·궁수 중 하나를 골라 유물을 모으고, 보스 머쉬맘과 자쿰을 물리치고 탈출하세요.
 ```
 - 🇺🇸
 ```
-A MapleStory dungeon RPG where bumping into a monster starts a Pokémon-style turn-based battle.
+A MapleStory dungeon RPG where bumping into a monster starts a turn-based battle.
 Pick Warrior, Mage, or Archer, gather the relics, and defeat the bosses Mushmom and Zakum to escape.
 ```
 
@@ -46,7 +46,7 @@ Pick Warrior, Mage, or Archer, gather the relics, and defeat the bosses Mushmom 
 Maple Relic Adventure is a top-down, turn-based RPG built with MapleStory.
 
 Explore the Henesys dungeon from a top-down view. The moment you bump into a wandering
-monster, the screen transitions into a Pokémon-style turn-based battle. Choose one of three
+monster, the screen transitions into a turn-based battle. Choose one of three
 classes — Warrior, Mage, or Archer — each with its own stats and unique skills.
 
 • Collect 5 ancient relics scattered across each floor.
@@ -64,7 +64,7 @@ Easy to pick up, with a familiar "bump-and-battle" loop anyone can enjoy.
 Maple Relic Adventure는 메이플스토리로 만든 탑다운 턴제 RPG입니다.
 
 위에서 내려다보는 시점으로 헤네시스 던전을 탐험하다, 배회하는 몬스터와 부딪히는 순간
-포켓몬식 턴제 배틀로 화면이 전환됩니다. 전사·마법사·궁수 세 직업 중 하나를 골라,
+턴제 배틀로 화면이 전환됩니다. 전사·마법사·궁수 세 직업 중 하나를 골라,
 각자의 스탯과 고유 스킬로 전투하세요.
 
 • 각 층에 흩어진 고대 유물 5개를 수집
@@ -81,7 +81,7 @@ Maple Relic Adventure는 메이플스토리로 만든 탑다운 턴제 RPG입니
 ### 장르 / 태그 (Genre / Tags)
 ```
 Genre: Turn-based RPG · Adventure
-Tags: RPG, Turn-based, Dungeon Crawler, MapleStory, Pokémon-like, Single-player,
+Tags: RPG, Turn-based, Dungeon Crawler, MapleStory, Mobile-friendly, Single-player,
       Pixel, Cute, Boss Battle, Relic Hunt
 ```
 
@@ -172,7 +172,7 @@ defiantly. Embers, lava glow, epic lighting, cute-but-epic 2D RPG style, 16:9.
 - 🇰🇷 (트위터/X)
 ```
 🍁 Maple Relic Adventure 출시!
-포켓몬처럼 부딪히면 턴제 배틀 ⚔️
+부딪히면 턴제 배틀 ⚔️
 전사·마법사·궁수로 던전을 탐험하고, 유물 모아 머쉬맘과 자쿰을 쓰러뜨려라!
 지금 MSU에서 플레이 👉 [링크]
 #MapleStory #MSU #VibeCamp #메이플
@@ -180,7 +180,7 @@ defiantly. Embers, lava glow, epic lighting, cute-but-epic 2D RPG style, 16:9.
 - 🇺🇸 (English)
 ```
 🍁 Maple Relic Adventure is live!
-Bump a monster → turn-based battle, Pokémon style ⚔️
+Bump a monster → turn-based battle ⚔️ (desktop & mobile, with BGM + SFX)
 Pick Warrior / Mage / Archer, collect relics, and take down Mushmom & Zakum!
 Play now on MSU 👉 [link]
 #MapleStory #MSU #VibeCamp #IndieGame
@@ -191,7 +191,7 @@ Play now on MSU 👉 [link]
 ## 6. 제출 폼에 넣을 한 줄 요약(복붙용)
 ```
 Title: Maple Relic Adventure
-One-liner: A MapleStory top-down RPG with Pokémon-style bump-to-battle combat — pick a class,
+One-liner: A MapleStory top-down RPG with bump-to-battle turn-based combat — pick a class,
 collect relics, beat Mushmom & Zakum, escape the dungeon.
 Genre: Turn-based RPG / Adventure
 Players: Single-player

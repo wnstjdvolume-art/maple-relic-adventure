@@ -21,6 +21,7 @@ const ctxProxy = new Proxy({}, {
 const document = {
   getElementById: () => { const e = fakeEl(); e.getContext = () => ctxProxy; return e; },
   createElement: () => fakeEl(),
+  querySelectorAll: () => [],
   documentElement: { lang: "" },
 };
 

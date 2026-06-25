@@ -12,8 +12,9 @@
   #wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
   #topbar { width:800px; max-width:96vw; display:flex; align-items:center; justify-content:space-between; }
   #title { font-size:22px; font-weight:800; } #title span { color:var(--maple-orange); }
-  #langBtn { background:rgba(0,0,0,.35); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:8px; padding:5px 12px; font-size:13px; cursor:pointer; }
-  #langBtn:hover { border-color:var(--maple-orange); }
+  #topbtns { display:flex; gap:8px; }
+  #langBtn, #muteBtn { background:rgba(0,0,0,.35); color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:8px; padding:5px 12px; font-size:13px; cursor:pointer; }
+  #langBtn:hover, #muteBtn:hover { border-color:var(--maple-orange); }
   #hud { width:800px; max-width:96vw; display:flex; align-items:center; gap:12px; font-size:14px; flex-wrap:wrap; }
   #hud .box { background:rgba(0,0,0,.35); padding:6px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.1); }
   #hpbar,#mpbar { width:120px; height:13px; background:#3a2020; border-radius:7px; overflow:hidden; border:1px solid rgba(255,255,255,.2); display:inline-block; vertical-align:middle; }
@@ -21,8 +22,25 @@
   #hpfill { height:100%; background:linear-gradient(90deg,#ff5a5a,#ff9a9a); transition:width .2s; }
   #mpfill { height:100%; background:linear-gradient(90deg,#4aa3ff,#9fd0ff); transition:width .2s; }
   #relics { color:var(--maple-orange); font-weight:700; }
-  canvas { background:#15101d; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.5); border:2px solid rgba(255,154,60,.4); }
+  canvas { background:#15101d; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.5); border:2px solid rgba(255,154,60,.4); max-width:100%; height:auto; touch-action:none; }
   #hint { font-size:12px; opacity:.7; }
+  /* 모바일 터치 컨트롤 */
+  #touchControls { display:none; width:800px; max-width:96vw; justify-content:space-between; align-items:flex-end; margin-top:4px; }
+  #dpad { display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px); gap:4px; }
+  #dpad .tbtn:nth-child(1){ grid-column:2; grid-row:1; }
+  #dpad .tbtn:nth-child(2){ grid-column:1; grid-row:2; }
+  #dpad .tbtn:nth-child(3){ grid-column:2; grid-row:2; opacity:.25; }
+  #dpad .tbtn:nth-child(4){ grid-column:3; grid-row:2; }
+  #dpad .tbtn:nth-child(5){ grid-column:2; grid-row:3; }
+  #abbtns { display:flex; gap:12px; align-items:center; }
+  .tbtn { background:rgba(255,154,60,.22); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:12px;
+    font-size:20px; font-weight:700; width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; user-select:none; -webkit-user-select:none; touch-action:none; }
+  .tbtn:active { background:var(--maple-orange); color:#2b2233; }
+  .tbtn.big { width:72px; height:72px; font-size:24px; border-radius:50%; background:rgba(124,200,120,.28); }
+  .tbtn.b { width:56px; height:56px; border-radius:50%; }
+  /* 터치 기기 또는 좁은 화면에서만 컨트롤 표시 */
+  @media (pointer: coarse), (max-width: 860px) { #touchControls { display:flex; } #hint { display:none; } }
   .center-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(10,6,18,.88); text-align:center; gap:14px; padding:20px;}
   .center-overlay h1 { font-size:36px; margin:0; }
   .center-overlay p { font-size:15px; opacity:.85; margin:0; max-width:560px; line-height:1.7; white-space:pre-line; }
@@ -42,7 +60,10 @@
 <div id="wrap">
   <div id="topbar">
     <div id="title">🍁 Maple <span>Relic</span> Adventure</div>
-    <button id="langBtn">한국어</button>
+    <div id="topbtns">
+      <button id="muteBtn" title="Sound on/off">🔊</button>
+      <button id="langBtn">한국어</button>
+    </div>
   </div>
   <div id="hud">
     <div class="box" id="classbox">-</div>
@@ -54,6 +75,19 @@
     <div class="box" id="msg"></div>
   </div>
   <canvas id="game" width="800" height="544"></canvas>
+  <div id="touchControls">
+    <div id="dpad">
+      <button class="tbtn" data-k="arrowup">▲</button>
+      <button class="tbtn" data-k="arrowleft">◀</button>
+      <button class="tbtn">●</button>
+      <button class="tbtn" data-k="arrowright">▶</button>
+      <button class="tbtn" data-k="arrowdown">▼</button>
+    </div>
+    <div id="abbtns">
+      <button class="tbtn b" data-k="escape">B</button>
+      <button class="tbtn big" data-k="enter">A</button>
+    </div>
+  </div>
   <div id="hint"></div>
 </div>
 
@@ -372,11 +406,69 @@ function makeFieldMon(x,y,key){ const t=MONSTER_TYPES[key]; return { key, x, y, 
 function isWall(cx,cy,cr){ for(const w of game.walls){ const nx=Math.max(w.x,Math.min(cx,w.x+TILE)), ny=Math.max(w.y,Math.min(cy,w.y+TILE)); const dx=cx-nx,dy=cy-ny; if(dx*dx+dy*dy<cr*cr) return true; } return false; }
 function moveEnt(e,dx,dy,cr){ if(!isWall(e.x+dx,e.y,cr)) e.x+=dx; if(!isWall(e.x,e.y+dy,cr)) e.y+=dy; }
 
+// ---------- 사운드 (Web Audio 합성 — 외부 음원 미사용, IP 안전) ----------
+const MUSIC = {
+  field:  { mel:[440,0,523,0,587,0,523,0,440,0,392,0,440,0,0,0], bass:[110,110,147,98] },
+  battle: { mel:[523,0,494,523,587,0,494,440,523,0,587,659,587,523,494,0], bass:[131,131,98,117] },
+  boss:   { mel:[392,466,523,466,392,349,392,466,523,587,523,466,392,349,330,349], bass:[98,98,87,104] },
+};
+const Audio8 = {
+  ctx:null, master:null, muted:false, timer:null, step:0, mode:"field",
+  init(){ if(this.ctx) return; const AC=(typeof window!=="undefined")&&(window.AudioContext||window.webkitAudioContext); if(!AC) return;
+    try{ this.ctx=new AC(); }catch(e){ return; }
+    this.master=this.ctx.createGain(); this.master.gain.value=this.muted?0:0.4; this.master.connect(this.ctx.destination); this.loop(); },
+  resume(){ if(this.ctx && this.ctx.state==="suspended"){ try{ this.ctx.resume(); }catch(e){} } },
+  tone(freq,dur,type,vol,when){ if(!this.ctx||freq<=0) return; const t=when||this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=type||"square"; o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol||0.2,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(this.master); o.start(t); o.stop(t+dur+0.03); },
+  slide(f1,f2,dur,type,vol){ if(!this.ctx) return; const t=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=type||"sawtooth"; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol||0.2,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(this.master); o.start(t); o.stop(t+dur+0.03); },
+  noise(dur,vol){ if(!this.ctx) return; const t=this.ctx.currentTime, n=Math.floor(this.ctx.sampleRate*dur);
+    const buf=this.ctx.createBuffer(1,n,this.ctx.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+    const s=this.ctx.createBufferSource(); s.buffer=buf; const g=this.ctx.createGain(); g.gain.value=vol||0.2;
+    s.connect(g); g.connect(this.master); s.start(t); },
+  sfx(type){ if(!this.ctx) return; const now=this.ctx.currentTime;
+    switch(type){
+      case "cursor": this.tone(520,0.05,"square",0.07); break;
+      case "select": this.tone(680,0.07,"square",0.11); this.tone(900,0.08,"square",0.09,now+0.05); break;
+      case "hit": this.noise(0.1,0.16); this.tone(180,0.12,"square",0.11); break;
+      case "crit": this.noise(0.16,0.2); this.slide(320,120,0.18,"sawtooth",0.18); break;
+      case "skill": this.slide(400,900,0.18,"triangle",0.15); break;
+      case "heal": this.tone(660,0.1,"sine",0.15); this.tone(880,0.14,"sine",0.15,now+0.08); break;
+      case "miss": this.tone(200,0.12,"sine",0.09); break;
+      case "hurt": this.slide(260,90,0.22,"square",0.17); break;
+      case "pickup": this.tone(880,0.08,"square",0.13); this.tone(1320,0.12,"square",0.13,now+0.07); break;
+      case "level": [523,659,784,1047].forEach((f,i)=>this.tone(f,0.16,"triangle",0.15,now+i*0.09)); break;
+      case "encounter": this.slide(200,820,0.25,"sawtooth",0.13); break;
+      case "boss": this.slide(120,55,0.5,"sawtooth",0.2); this.tone(110,0.5,"square",0.13); break;
+      case "win": [523,659,784,1047,1319].forEach((f,i)=>this.tone(f,0.2,"triangle",0.17,now+i*0.12)); break;
+      case "lose": [392,330,262,196].forEach((f,i)=>this.tone(f,0.28,"sine",0.15,now+i*0.16)); break;
+    } },
+  setMode(m){ this.mode=m; },
+  stepDur(){ return this.mode==="boss"?135:this.mode==="battle"?170:260; },
+  loop(){ const self=this; (function tick(){ if(!self.ctx) return; self.playStep(); self.timer=setTimeout(tick, self.stepDur()); })(); },
+  playStep(){ if(!this.ctx || this.muted){ this.step++; return; }
+    const P=MUSIC[this.mode]||MUSIC.field, m=P.mel[this.step % P.mel.length];
+    if(m) this.tone(m, this.stepDur()/1000*0.9, "triangle", 0.06);
+    if(this.step%4===0) this.tone(P.bass[Math.floor(this.step/4)%P.bass.length], this.stepDur()/1000*3.4, "sine", 0.11);
+    this.step++; },
+  toggleMute(){ this.muted=!this.muted; if(this.master) this.master.gain.value=this.muted?0:0.4; try{ localStorage.setItem("mra_mute", this.muted?"1":"0"); }catch(e){} return this.muted; },
+};
+try{ if(localStorage.getItem("mra_mute")==="1") Audio8.muted=true; }catch(e){}
+
 // ---------- 입력 ----------
-addEventListener("keydown", e=>{ const k=e.key.toLowerCase(); keys[k]=true;
+function pressKey(k){ keys[k]=true; Audio8.resume(); if(state==="battle") handleBattleKey(k); }
+function releaseKey(k){ keys[k]=false; }
+addEventListener("keydown", e=>{ const k=e.key.toLowerCase();
   if([" ","arrowup","arrowdown","arrowleft","arrowright","enter","escape"].includes(k)) e.preventDefault();
-  if(state==="battle") handleBattleKey(k); });
-addEventListener("keyup", e=>{ keys[e.key.toLowerCase()]=false; });
+  pressKey(k); });
+addEventListener("keyup", e=>{ releaseKey(e.key.toLowerCase()); });
 
 // ---------- 필드 ----------
 function updateOverworld(){
@@ -396,7 +488,7 @@ function updateOverworld(){
     if(dist<m.r+g.pr-2 && g.encounterCd===0){ startBattle(m); return; }
   }
   for(const rel of g.relics){ if(rel.got) continue; rel.t+=0.08;
-    if(Math.hypot(g.px-rel.x,g.py-rel.y)<g.pr+11){ rel.got=true; g.collected++;
+    if(Math.hypot(g.px-rel.x,g.py-rel.y)<g.pr+11){ rel.got=true; g.collected++; Audio8.sfx("pickup");
       spawn(rel.x,rel.y,"#ff9a3c",16); setMsg(t("relicGet")(g.collected));
       if(g.collected>=TOTAL_RELICS && !g.bossSpawned) spawnBoss(); } }
   if(g.portal){ g.portal.t+=0.1;
@@ -413,16 +505,17 @@ function spawnBoss(){
   const cands=[[-2,0],[0,-2],[-2,-1],[-3,0],[0,-3],[-2,-2],[2,0],[0,2]];
   for(const [dc,dr] of cands){ const cx=px+dc*TILE, cy=py+dr*TILE; if(!isWall(cx,cy,mt.r)){ bx=cx; by=cy; break; } }
   const boss=makeFieldMon(bx,by,key); boss.r=mt.r; game.monsters.push(boss);
-  setMsg(t("bossAppear")(monName(key))); spawn(bx,by,mt.color,32);
+  setMsg(t("bossAppear")(monName(key))); spawn(bx,by,mt.color,32); Audio8.sfx("boss");
 }
 
 // ---------- 배틀 전환 ----------
-function startBattle(fieldMon){ transition={t:0,mon:fieldMon}; state="transition"; }
+function startBattle(fieldMon){ transition={t:0,mon:fieldMon}; state="transition"; Audio8.sfx("encounter"); }
 function beginBattleScene(fieldMon){
   const mt=MONSTER_TYPES[fieldMon.key];
   battle={ fieldMon, enemy:{ key:fieldMon.key, maxHp:mt.maxHp, hp:mt.maxHp, atk:mt.atk, exp:mt.exp, kind:mt.kind, r:mt.r, status:{poison:0} },
     phase:"msg", menuIndex:0, skillIndex:0, msgQueue:[], onMsgDone:null, shake:0, enemyFlash:0, playerFlash:0, anim:0, turn:0 };
   const isBoss=mt.kind==="boss"; const nm=monName(fieldMon.key);
+  Audio8.setMode(isBoss?"boss":"battle");
   pushMsgs(isBoss?[t("bossBlock")(nm), t("bossAura")]:[t("wildAppear")(nm)], beginPlayerTurn);
   state="battle";
 }
@@ -454,7 +547,7 @@ function enemyAct(){
   else if(e.kind==="heavy" && Math.random()<0.30){ act="heavy"; mul=1.5; }
   else if(e.kind==="poison" && Math.random()<0.4){ act="pspore"; mul=0.9; applyPoison=true; }
   let dmg=Math.round((e.atk+rint(0,2))*mul);
-  player.hp=Math.max(0,player.hp-dmg); battle.playerFlash=10; battle.shake=mul>1.3?14:8;
+  player.hp=Math.max(0,player.hp-dmg); battle.playerFlash=10; battle.shake=mul>1.3?14:8; Audio8.sfx("hurt");
   let lines=[t("enemyHit")(monName(e.key),dmg,act)];
   if(applyPoison && player.status.poison<=0 && Math.random()<0.8){ player.status.poison=4; lines.push(t("playerPoisoned")); }
   pushMsgs(lines, ()=>{ if(player.hp<=0) loseBattle(); else beginPlayerTurn(); });
@@ -465,43 +558,44 @@ function handleBattleKey(k){
   if(!battle) return;
   if(battle.phase==="msg"){ if(k===" "||k==="enter") advanceMsg(); return; }
   if(battle.phase==="menu"){
-    if(k==="arrowup"||k==="w") battle.menuIndex=(battle.menuIndex+3)%4;
-    else if(k==="arrowdown"||k==="s") battle.menuIndex=(battle.menuIndex+1)%4;
-    else if(k===" "||k==="enter") chooseMain(battle.menuIndex);
-    else if(k>="1"&&k<="4"){ battle.menuIndex=+k-1; chooseMain(battle.menuIndex); }
+    if(k==="arrowup"||k==="w"){ battle.menuIndex=(battle.menuIndex+3)%4; Audio8.sfx("cursor"); }
+    else if(k==="arrowdown"||k==="s"){ battle.menuIndex=(battle.menuIndex+1)%4; Audio8.sfx("cursor"); }
+    else if(k===" "||k==="enter"){ Audio8.sfx("select"); chooseMain(battle.menuIndex); }
+    else if(k>="1"&&k<="4"){ battle.menuIndex=+k-1; Audio8.sfx("select"); chooseMain(battle.menuIndex); }
   } else if(battle.phase==="skillmenu"){
     const n=CLASSES[player.cls].skills.length;
-    if(k==="arrowup"||k==="w") battle.skillIndex=(battle.skillIndex+n)%(n+1);
-    else if(k==="arrowdown"||k==="s") battle.skillIndex=(battle.skillIndex+1)%(n+1);
-    else if(k==="escape"||k==="backspace") battle.phase="menu";
-    else if(k===" "||k==="enter"){ if(battle.skillIndex===n) battle.phase="menu"; else useSkill(battle.skillIndex); }
+    if(k==="arrowup"||k==="w"){ battle.skillIndex=(battle.skillIndex+n)%(n+1); Audio8.sfx("cursor"); }
+    else if(k==="arrowdown"||k==="s"){ battle.skillIndex=(battle.skillIndex+1)%(n+1); Audio8.sfx("cursor"); }
+    else if(k==="escape"||k==="backspace"){ battle.phase="menu"; Audio8.sfx("cursor"); }
+    else if(k===" "||k==="enter"){ if(battle.skillIndex===n){ battle.phase="menu"; Audio8.sfx("cursor"); } else { Audio8.sfx("select"); useSkill(battle.skillIndex); } }
   }
 }
 function chooseMain(i){
   const e=battle.enemy, enm=monName(e.key);
   if(i===0){ const {dmg,crit}=calcHit(pAtk(),0.95);
-    if(dmg>0){ e.hp=Math.max(0,e.hp-dmg); battle.enemyFlash=10; battle.shake=crit?14:8; spawnB(560,150,MONSTER_TYPES[e.key].color,crit?16:8);
+    if(dmg>0){ Audio8.sfx(crit?"crit":"hit"); e.hp=Math.max(0,e.hp-dmg); battle.enemyFlash=10; battle.shake=crit?14:8; spawnB(560,150,MONSTER_TYPES[e.key].color,crit?16:8);
       pushMsgs([t("atkMsg")(enm,dmg,crit)], afterPlayerAction); }
-    else pushMsgs([t("atkMiss")], afterPlayerAction);
+    else { Audio8.sfx("miss"); pushMsgs([t("atkMiss")], afterPlayerAction); }
   } else if(i===1){ battle.phase="skillmenu"; battle.skillIndex=0; }
-  else if(i===2){ if(player.potions<=0){ pushMsgs([t("noPotion")], showMenu); return; }
-    player.potions--; const b=player.hp; player.hp=Math.min(player.maxHp,player.hp+42);
+  else if(i===2){ if(player.potions<=0){ Audio8.sfx("miss"); pushMsgs([t("noPotion")], showMenu); return; }
+    player.potions--; Audio8.sfx("heal"); const b=player.hp; player.hp=Math.min(player.maxHp,player.hp+42);
     pushMsgs([t("potionMsg")(player.hp-b)], afterPlayerAction);
-  } else if(i===3){ if(e.kind==="boss"){ pushMsgs([t("cantRunBoss")], showMenu); return; }
-    if(Math.random()<0.5) pushMsgs([t("ranAway")], exitBattle); else pushMsgs([t("cantRun")], beginEnemyTurn);
+  } else if(i===3){ if(e.kind==="boss"){ Audio8.sfx("miss"); pushMsgs([t("cantRunBoss")], showMenu); return; }
+    if(Math.random()<0.5){ Audio8.sfx("select"); pushMsgs([t("ranAway")], exitBattle); } else { Audio8.sfx("miss"); pushMsgs([t("cantRun")], beginEnemyTurn); }
   }
 }
 function calcHit(atk,acc,mul){ mul=mul||1; if(Math.random()>acc) return {dmg:0,crit:false};
   const crit=Math.random()<player.crit; let d=Math.round((atk+rint(0,3))*mul*(crit?1.6:1)); return {dmg:Math.max(1,d),crit}; }
 function useSkill(idx){
   const sk=CLASSES[player.cls].skills[idx], e=battle.enemy, skn=skName(sk), enm=monName(e.key);
-  if(player.mp<sk.mp){ pushMsgs([t("noMp")], ()=>{ battle.phase="menu"; }); return; }
+  if(player.mp<sk.mp){ Audio8.sfx("miss"); pushMsgs([t("noMp")], ()=>{ battle.phase="menu"; }); return; }
   player.mp-=sk.mp;
-  if(sk.kind==="heal"){ const b=player.hp; player.hp=Math.min(player.maxHp,player.hp+sk.heal);
+  if(sk.kind==="heal"){ Audio8.sfx("heal"); const b=player.hp; player.hp=Math.min(player.maxHp,player.hp+sk.heal);
     spawnB(220,330,"#7CFC00",14); pushMsgs([t("skillHeal")(skn,player.hp-b)], afterPlayerAction); return; }
-  if(sk.kind==="buff"){ player.atkBuff+=sk.atk; pushMsgs([t("skillBuff")(skn,sk.atk,player.atkBuff)], afterPlayerAction); return; }
+  if(sk.kind==="buff"){ Audio8.sfx("skill"); player.atkBuff+=sk.atk; pushMsgs([t("skillBuff")(skn,sk.atk,player.atkBuff)], afterPlayerAction); return; }
   let total=0, anyCrit=false, hitCount=0;
   for(let h=0;h<sk.hits;h++){ const {dmg,crit}=calcHit(pAtk(),sk.acc,sk.mul); if(dmg>0){ e.hp=Math.max(0,e.hp-dmg); total+=dmg; hitCount++; if(crit) anyCrit=true; } }
+  Audio8.sfx(hitCount===0?"miss":(anyCrit?"crit":"skill"));
   battle.enemyFlash=12; battle.shake=anyCrit?16:12; spawnB(560,150,MONSTER_TYPES[e.key].color,12);
   let lines=[];
   if(hitCount===0) lines.push(t("skillAllMiss")(skn));
@@ -512,16 +606,17 @@ function useSkill(idx){
 }
 function winBattle(){
   const e=battle.enemy; battle.fieldMon.defeated=true; player.exp+=e.exp; player.atkBuff=0;
-  let lines=[t("defeated")(monName(e.key)), t("expGain")(e.exp)];
+  let lines=[t("defeated")(monName(e.key)), t("expGain")(e.exp)], leveled=false;
   while(player.exp>=player.expNext){ player.exp-=player.expNext; player.lv++; player.expNext=Math.round(player.expNext*1.5);
     player.maxHp+=11; player.hp=player.maxHp; player.atk+=2; player.maxMp+=3; player.mp=player.maxMp;
-    lines.push(t("levelUp")(player.lv)); }
+    lines.push(t("levelUp")(player.lv)); leveled=true; }
+  if(leveled) Audio8.sfx("level");
   if(e.kind==="boss"){ game.bossDefeated=true; game.portal.open=true;
     lines.push(game.floorIdx<FLOORS.length-1 ? t("portalDeeper") : t("portalEscape")); }
   pushMsgs(lines, exitBattle);
 }
 function loseBattle(){ pushMsgs([t("loseLine1"), t("loseLine2")], ()=>endGame(false)); }
-function exitBattle(){ state="overworld"; game.encounterCd=45; player.status.poison=0; battle=null; }
+function exitBattle(){ state="overworld"; game.encounterCd=45; player.status.poison=0; battle=null; Audio8.setMode("field"); }
 
 // ---------- 렌더: 필드 ----------
 function drawOverworld(){
@@ -673,6 +768,7 @@ function showClassSelect(){
   document.getElementById("classScreen").classList.remove("hidden");
 }
 function startGame(classKey){
+  Audio8.init(); Audio8.resume(); Audio8.setMode("field");
   player=newPlayer(classKey); game=makeWorld(0); battle=null; transition=null; particles=[]; state="overworld";
   document.getElementById("classScreen").classList.add("hidden");
   document.getElementById("endScreen").classList.add("hidden");
@@ -689,10 +785,11 @@ function clearFloor(){
 }
 function nextFloor(){
   const ni=game.floorIdx+1; game=makeWorld(ni); battle=null; transition=null; particles=[]; state="overworld";
+  Audio8.setMode("field");
   document.getElementById("floorScreen").classList.add("hidden");
   setMsg(t("relicGoalDeep"));
 }
-function endGame(won){ state="over"; const es=document.getElementById("endScreen");
+function endGame(won){ state="over"; Audio8.setMode("field"); Audio8.sfx(won?"win":"lose"); const es=document.getElementById("endScreen");
   document.getElementById("endTitle").textContent=won?t("winTitle"):t("loseTitle");
   document.getElementById("endText").textContent=won ? t("winText")(playerName(),player.lv) : t("loseText")(game.short,game.collected);
   es.classList.remove("hidden");
@@ -727,10 +824,24 @@ function endGameRefresh(){
 }
 function toggleLang(){ LANG = (LANG==="en")?"ko":"en"; try{ localStorage.setItem("mra_lang",LANG); }catch(e){} applyStaticText(); }
 
-document.getElementById("startBtn").onclick=showClassSelect;
+document.getElementById("startBtn").onclick=()=>{ Audio8.init(); Audio8.resume(); showClassSelect(); };
 document.getElementById("retryBtn").onclick=showClassSelect;
 document.getElementById("floorBtn").onclick=nextFloor;
 document.getElementById("langBtn").onclick=toggleLang;
+document.getElementById("muteBtn").onclick=()=>{ Audio8.init(); const m=Audio8.toggleMute(); document.getElementById("muteBtn").textContent=m?"🔇":"🔊"; };
+document.getElementById("muteBtn").textContent=Audio8.muted?"🔇":"🔊";
+
+// 터치 컨트롤 → 키 입력 매핑
+document.querySelectorAll("#touchControls .tbtn[data-k]").forEach(btn=>{
+  const k=btn.getAttribute("data-k");
+  const down=e=>{ e.preventDefault(); Audio8.init(); Audio8.resume(); pressKey(k); };
+  const up=e=>{ e.preventDefault(); releaseKey(k); };
+  btn.addEventListener("pointerdown",down);
+  btn.addEventListener("pointerup",up);
+  btn.addEventListener("pointerleave",up);
+  btn.addEventListener("pointercancel",up);
+});
+
 applyStaticText();
 loop();
 </script>

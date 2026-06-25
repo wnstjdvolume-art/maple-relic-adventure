@@ -20,7 +20,7 @@ Bump to battle — collect the ancient relics and escape the Henesys dungeon!
 
 ### Short Description (1–2 sentences)
 ```
-A MapleStory dungeon RPG where bumping into a monster starts a Pokémon-style turn-based battle.
+A MapleStory dungeon RPG where bumping into a monster starts a turn-based battle.
 Pick Warrior, Mage, or Archer, gather the relics, and defeat the bosses Mushmom and Zakum to escape.
 ```
 
@@ -29,8 +29,8 @@ Pick Warrior, Mage, or Archer, gather the relics, and defeat the bosses Mushmom 
 Maple Relic Adventure is a top-down, turn-based RPG built with MapleStory.
 
 Explore the Henesys dungeon from a top-down view. The moment you bump into a wandering monster,
-the screen transitions into a Pokémon-style turn-based battle. Choose one of three classes —
-Warrior, Mage, or Archer — each with its own stats and unique skills.
+the screen transitions into a turn-based battle (bump-to-battle encounters). Choose one of three
+classes — Warrior, Mage, or Archer — each with its own stats and unique skills.
 
 • Collect 5 ancient relics scattered across each floor.
 • Battle 16 kinds of MapleStory monsters (snails, mushrooms, slimes, stumps, wild boars and more),
@@ -40,14 +40,15 @@ Warrior, Mage, or Archer — each with its own stats and unique skills.
   "Forgotten Depths" (B2), then face the final boss ZAKUM in a 4-phase showdown.
 • Win to open the escape portal and clear the dungeon.
 
-Available in English (default) and Korean (toggle). Easy to pick up, with a familiar
-"bump-and-battle" loop anyone can enjoy.
+Plays on desktop (keyboard) and mobile (on-screen D-pad + A/B buttons), with original synthesized
+background music and sound effects. Available in English (default) and Korean (toggle).
+Easy to pick up, with a familiar "bump-and-battle" loop anyone can enjoy.
 ```
 
 ### Genre / Tags
 ```
 Genre: Turn-based RPG · Adventure
-Tags: RPG, Turn-based, Dungeon Crawler, MapleStory, Pokemon-like, Single-player,
+Tags: RPG, Turn-based, Dungeon Crawler, MapleStory, Single-player, Mobile-friendly,
       Pixel, Cute, Boss Battle, Relic Hunt
 ```
 
@@ -58,8 +59,9 @@ all MapleStory IP).
 
 ### Controls
 ```
-Field: WASD or Arrow keys to move
-Battle: Up/Down to select, Enter/Space to confirm, Esc to go back (1–4 number keys also work)
+Desktop — Field: WASD or Arrow keys to move. Battle: Up/Down to select, Enter/Space to confirm,
+          Esc to go back (1–4 number keys also work).
+Mobile  — On-screen D-pad to move/select, A button = confirm (Enter), B button = back (Esc).
 Commands: Attack / Skill (submenu) / Potion / Run
 ```
 
@@ -68,15 +70,23 @@ Commands: Attack / Skill (submenu) / Potion / Run
 English (default) + Korean (toggle button, top-right). All UI & battle text localized.
 ```
 
+### Audio
+```
+Original synthesized BGM (field / battle / boss themes) + sound effects (hit, crit, skill, heal,
+pickup, level-up, boss, win/lose). Mute toggle (🔊) in the top bar. No external/copyrighted audio.
+```
+
 ---
 
 ## 2. Judging Appeal Points
 ```
 - MapleStory IP usage: 3 snail variants, mushrooms, slime, stump, wild boar, curse eye, dark yeti,
   jr. balrog and more — 16 monster types + bosses Mushmom & Zakum, with a Henesys dungeon mood.
-- Complete game loop: class select -> explore -> bump battle -> grow -> boss -> next floor -> clear.
+- Complete game loop: class select -> explore -> bump-to-battle -> grow -> boss -> next floor -> clear.
 - Battle depth: class skills, multi-hits, poison status, criticals, 3–4 turn boss patterns.
 - Accessibility: the universally familiar "bump-to-battle" feel. One run takes about 5 minutes.
+- Plays anywhere: desktop keyboard + mobile touch controls (D-pad + A/B), responsive canvas.
+- Audio: original synthesized BGM + SFX (no external IP), with a mute toggle.
 - Global-ready: English by default with a Korean toggle.
 - Extensible: floors (B3+) and bosses can be added as data.
 ```
@@ -87,55 +97,61 @@ English (default) + Korean (toggle button, top-right). All UI & battle text loca
 ```
 Visibility: Public            (required for review & for the jam)
 Let others spin: OFF          (protect your entry during the contest)
-Show to mobile users: OFF     (keyboard-only game; touch devices can't play)
+Show to mobile users: ON      (v3 adds touch controls + mobile UI — mobile is now supported)
 Update notification: optional
 Highlight notification: N/A   (Gold tier only)
 ```
 
 ---
 
-## 4. v2 Build Release
+## 4. v3 Build Release
 
 ### Build Version
 ```
-v2
+v3
 ```
 
 ### Build Release Title (max 50 chars)
 ```
-v2 – English default + Korean language toggle
+v3 – Mobile controls, sound (BGM/SFX), IP cleanup
 ```
 
 ### Release Type (select up to 3)
 ```
 Improvements
+New
 ```
-(optionally also: New)
+(also acceptable: Compatibility)
 
 ### Release Description (max 1000 chars)
 ```
-v2 — Localization update.
+v3 — Mobile, audio, and IP compliance update (reviewer feedback addressed).
 
-Based on reviewer feedback for the global game jam, the game now uses ENGLISH as the default
-language, with a one-tap toggle (top-right) to switch to Korean. All UI labels and battle
-messages are fully localized in both languages, and the choice is remembered between sessions.
+• Removed an unlicensed IP name from the title and description. The mechanic is now described
+  with neutral wording (bump-to-battle / encounter-based turn-based battles).
+• Mobile support: on-screen D-pad to move and navigate menus, plus A (confirm) and B (back)
+  buttons. Responsive canvas and touch-friendly UI that appear on touch devices and small screens.
+• Audio: original synthesized background music (separate field / battle / boss themes) and sound
+  effects (hit, critical, skill, heal, relic pickup, level-up, boss appearance, win/lose).
+  A mute toggle (🔊) sits in the top bar. No external or copyrighted audio is used.
 
-No gameplay changes — same content as v1:
-• 3 classes (Warrior, Mage, Archer), each with unique skills
-• 16 MapleStory monster types + 2 bosses (Mushmom, Zakum)
-• 2 dungeon floors (B1 Henesys, B2 Forgotten Depths)
-• Pokemon-style bump-to-battle, relic collection, leveling, criticals, multi-hits, poison
+Same content as before: 3 classes, 16 MapleStory monster types + 2 bosses (Mushmom, Zakum),
+2 dungeon floors, English default with a Korean toggle.
 
-Controls
-Field: WASD / Arrow keys to move
-Battle: Up/Down to select, Enter/Space to confirm, Esc to go back
-Commands: Attack / Skill (submenu) / Potion / Run
+Controls — Desktop: WASD/Arrows + Enter/Esc. Mobile: D-pad + A/B buttons.
 ```
 
 ### Short reviewer reply (if a comment box is available)
 ```
-Thanks for the feedback! v2 sets English as the default language and adds a top-right toggle to
-Korean, with all UI and battle text localized in both languages.
+Thanks for the feedback! v3 removes the unlicensed IP name from the title and description (now
+described in neutral terms), and adds mobile touch controls + a mobile-friendly UI, plus original
+synthesized BGM and sound effects with a mute toggle.
+```
+
+### Previous release — v2 (for reference)
+```
+v2 — Localization: English set as the default language with a top-right toggle to Korean;
+all UI and battle text localized in both languages, choice remembered between sessions.
 ```
 
 ---
@@ -194,7 +210,7 @@ defiantly. Embers, lava glow, epic lighting, cute-but-epic 2D RPG style, 16:9.
 ## 7. Launch Social Copy
 ```
 🍁 Maple Relic Adventure is live!
-Bump a monster → turn-based battle, Pokémon style ⚔️
+Bump a monster → turn-based battle ⚔️ now on desktop & mobile, with BGM + SFX
 Pick Warrior / Mage / Archer, collect relics, and take down Mushmom & Zakum!
 Now in English & Korean. Play on MSU 👉 [link]
 #MapleStory #MSU #VibeCamp #IndieGame
