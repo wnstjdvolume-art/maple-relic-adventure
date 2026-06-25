@@ -1,9 +1,49 @@
 # Verse8 / MSU Space — Paste-Ready Prompt (English)
 
 > Verse8(MSU Space)의 Agent 8은 **채팅창에 영어로 설명**하면 게임을 생성합니다.
-> 아래 텍스트를 **그대로 복사해서 붙여넣으세요.** (코드 파일 업로드 X — 프롬프트 입력 방식)
-> 권장: 먼저 **A. 원샷 프롬프트**를 붙여넣어 뼈대를 만들고, 결과를 보며
-> **B. 단계별 프롬프트**로 보강. 메이플 공식 에셋만 사용해야 합니다(Vibe Camp 규칙).
+> 두 가지 방법: **(0) Git으로 전달**(추천 — Agent8이 실제 코드를 읽음) 또는 **(A) 프롬프트만 붙여넣기**.
+> 메이플 공식 에셋만 사용해야 합니다(Vibe Camp 규칙).
+
+---
+
+## 0. ⭐ Git으로 Agent8에 전달 (추천)
+
+Repo: `https://github.com/wnstjdvolume-art/maple-relic-adventure`
+
+**Agent8 터미널** — 이미 clone 했으면:
+```
+cd maple-relic-adventure && git pull
+```
+처음이면:
+```
+git clone https://github.com/wnstjdvolume-art/maple-relic-adventure.git
+cd maple-relic-adventure && ls
+```
+(`index.html` 보이면 성공)
+
+**그다음 Agent8 채팅에 이걸 그대로 붙여넣기:**
+```
+Read index.html in this repo — it is a complete, playable top-down turn-based MapleStory RPG
+(bump-to-battle: walk the dungeon, bump a monster to start a turn-based battle). Rebuild this exact
+game in MSU Space and keep ALL of it:
+- 3 classes (Warrior, Mage, Archer) with their own stats and skills
+- 16 monster types + 2 bosses (Mushmom on B1, Zakum as the final boss), 2 floors (B1, B2)
+- Battle: Attack / Skill (submenu) / Potion / Run, with criticals, multi-hit skills, and poison
+- English as the DEFAULT language + a top-right Korean toggle (translate all UI & battle text)
+- Mobile: on-screen D-pad + A/B buttons, responsive canvas, touch-friendly UI
+- Background music (field/battle/boss) + sound effects + a mute toggle
+- Do NOT use any unlicensed IP name anywhere (the mechanic is "bump-to-battle / encounter-based")
+
+IMPORTANT — replace the placeholder shapes with OFFICIAL MapleStory (MSU) assets:
+- Warrior -> a Warrior-type character, Mage -> a Magician-type, Archer -> a Bowman/Archer-type
+- Use the official MapleStory monster sprites matching these exact names: Blue Snail, Snail,
+  Red Snail, Ribbon Pig, Green Mushroom, Orange Mushroom, Bubbling, Slime, Stump, Zombie Mushroom,
+  Dark Stump, Wild Boar, Curse Eye, Wild Kargo, Yeti, Jr. Balrog, and bosses Mushmom and Zakum
+- Henesys-style dungeon tiles, MapleStory BGM/SFX, a shiny item icon for relics, a portal effect
+Use ONLY official MapleStory/MSU assets — no placeholder shapes, no external/copyrighted art.
+```
+
+> 위 한 방이면 끝입니다. 일부만 안 되면 아래 **A~D**에서 해당 부분만 골라 추가로 붙여넣으세요.
 
 ---
 
